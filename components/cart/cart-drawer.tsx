@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/lib/cart-context"
 import { toast } from "sonner"
+import Image from "next/image"
 
 export function CartDrawer() {
   const { items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart()
@@ -45,7 +46,7 @@ export function CartDrawer() {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="w-full p-4 sm:max-w-lg">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
@@ -72,10 +73,12 @@ export function CartDrawer() {
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div key={item.product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                      <img
+                      <Image
                         src={item.product.image || "/placeholder.svg"}
                         alt={item.product.name}
                         className="w-16 h-16 object-cover rounded-md"
+                        width={500}
+                        height={500}
                       />
 
                       <div className="flex-1 space-y-1">

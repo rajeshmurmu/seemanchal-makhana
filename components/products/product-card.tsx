@@ -32,13 +32,13 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     return (
-        <Card className="group hover:shadow-lg transition-all pt-0 duration-300 overflow-hidden">
+        <Card className="group gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
             <div className="relative overflow-hidden">
                 <Link href={`/products/${product.id}`}>
                     <Image
                         src={product.image || "/placeholder.svg"}
                         alt={product.name}
-                        className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-48 md:h-72 object-cover group-hover:scale-105 transition-transform duration-300"
                         width={500}
                         height={500}
                     />
@@ -57,15 +57,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 )}
             </div>
 
-            <CardContent className="p-4">
+            <CardContent className="px-4">
                 <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">{product.category}</div>
 
                     <Link href={`/products/${product.id}`}>
-                        <h3 className="font-semibold text-lg hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
+                        <h3 className="font-semibold text-sm text-nowrap md:text-lg hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
                     </Link>
 
-                    <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                    <p className="hidden text-sm text-muted-foreground line-clamp-2">{product.description}</p>
 
                     <div className="flex items-center space-x-1">
                         <div className="flex items-center">
