@@ -22,8 +22,8 @@ export function UserMenu() {
     if (!user) {
         return (
             <>
-                <Button className="cursor-pointer rounded-full" variant="ghost" size="icon" onClick={() => setIsAuthModalOpen(true)}>
-                    <User className="h-8 w-8" />
+                <Button className="cursor-pointer bg-secondary rounded-full" variant="ghost" size="icon" onClick={() => setIsAuthModalOpen(true)}>
+                    <User className="h-8 w-8 text-muted-foreground" />
                 </Button>
                 <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
             </>

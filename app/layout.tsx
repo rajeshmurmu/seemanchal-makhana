@@ -1,8 +1,15 @@
 import type React from "react"
 import type { Metadata } from "next"
+import { Roboto } from "next/font/google"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "./globals.css"
 
+
+const roboto = Roboto({
+    weight: ['400', '700'],
+    subsets: ['latin'],
+    display: 'swap',
+});
 
 
 
@@ -22,7 +29,7 @@ export default function RootLayout({
     return (
         // <QueryClientProvider client={queryClient}>
         <html lang="en">
-            <body className={`font-sans`}>
+            <body className={`${roboto.className} font-sans`}>
                 {children}
             </body>
         </html>

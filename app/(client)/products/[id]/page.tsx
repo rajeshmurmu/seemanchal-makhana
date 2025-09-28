@@ -111,7 +111,7 @@ export default function ProductPage() {
                         <p className="text-lg text-muted-foreground leading-relaxed">{product.description}</p>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button onClick={handleAddToCart} size="lg" className="flex-1 group" disabled={!product.inStock}>
+                            <Button onClick={handleAddToCart} size="lg" className="flex-1 py-2 group" disabled={!product.inStock}>
                                 <ShoppingCart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                                 {product.inStock ? "Add to Cart" : "Out of Stock"}
                             </Button>

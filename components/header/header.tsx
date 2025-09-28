@@ -58,7 +58,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden absolute top-full left-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/95 py-4 px-8 border-t">
             <div className="flex flex-col space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -77,9 +77,9 @@ export function Header() {
                 ))}
 
                 <div className="py-2">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1">
                     <UserMenu />
-                    <h1>View Account</h1>
+                    <h1 className="inset-0">View Account</h1>
                   </div>
                 </div>
               </nav>
