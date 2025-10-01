@@ -1,4 +1,4 @@
-import { BarChart3, Home, MessageCircle, Package, Settings, ShoppingCart, Users } from "lucide-react"
+import { Home, MessageCircle, Package, Settings, ShoppingCart, Users } from "lucide-react"
 
 import {
     Sidebar,
@@ -62,7 +62,7 @@ export function AdminSidebarMenu() {
                         <Package className="h-4 w-4" />
                     </div>
                     <div>
-                        <p className="text-sm font-semibold">Admin Dashboard</p>
+                        <p className="text-sm font-semibold">Admin Panel</p>
                         <p className="text-xs text-muted-foreground">Semmanchal Makhana</p>
                     </div>
                 </div>

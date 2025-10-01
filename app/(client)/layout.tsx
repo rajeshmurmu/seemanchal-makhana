@@ -1,8 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 
-import { Toaster } from "@/components/ui/sonner"
-import { AuthProvider } from "@/lib/auth-context"
 import { CartProvider } from "@/lib/cart-context"
 import { Suspense } from "react"
 import { Header } from "@/components/header/header"
@@ -15,28 +13,21 @@ export const metadata: Metadata = {
   generator: "Next.js",
 }
 
-export default function RootLayout({
+export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans`}>
-        <Suspense fallback={null}>
-          <AuthProvider>
-            <CartProvider>
-              <FestivalBanner />
-              <Header />
-              <main>
-                {children}
-              </main>
-              <Footer />
-              <Toaster />
-            </CartProvider>
-          </AuthProvider>
-        </Suspense>
-      </body>
-    </html>
+    <Suspense fallback={null}>
+      <CartProvider>
+        <FestivalBanner />
+        <Header />
+        <main>
+          {children}
+        </main>
+        <Footer />
+      </CartProvider>
+    </Suspense>
   )
 }

@@ -2,78 +2,135 @@
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Plus } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import ProductForm, { ProductFormData } from '../../components/product-form'
+import ProductForm from '../../components/product-form'
 import ProductDataTable from './product-data-table'
-
-
-
-
-export interface Product {
-    id: string;
-    name: string;
-    price: number;
-    stock: number;
-    category: string;
-    status: "active" | "inactive";
-}
-
-const fetchProducts: Product[] = [
-    //todo: remove mock functionality
-    { id: "1", name: "Wireless Headphones", price: 99.99, stock: 45, category: "Electronics", status: "active" },
-    { id: "2", name: "Smartphone Case", price: 29.99, stock: 120, category: "Accessories", status: "active" },
-    { id: "3", name: "Laptop Stand", price: 79.99, stock: 0, category: "Electronics", status: "inactive" },
-    { id: "4", name: "USB Cable", price: 14.99, stock: 200, category: "Accessories", status: "active" },
-    { id: "5", name: "Power Bank", price: 49.99, stock: 33, category: "Electronics", status: "active" },
-]
+import toast from 'react-hot-toast'
+import { ProductFormData, ProductWithAdditionalFields } from '@/types/types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { addNewCategory, addNewProduct, deleteProduct, getAllProducts } from '@/lib/client/product-api'
+import { Input } from '@/components/ui/input'
 
 export default function AllProducts() {
 
-    const [products, setProducts] = useState<Product[]>([]);
-
+    const queryClient = useQueryClient();
+    const [products, setProducts] = useState<ProductWithAdditionalFields[]>([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
+    const [newCategory, setNewCategory] = useState<string>('');
 
-    const handleAddProduct = (formData: ProductFormData) => {
-        const newProduct: Product = {
-            id: Date.now().toString(),
-            name: formData.name,
-            price: parseFloat(formData.price),
-            stock: parseInt(formData.stock),
-            category: formData.category,
-            status: "active",
-        };
-        setProducts(prev => [newProduct, ...(prev ?? [])]);
+
+    const { data: productData, isLoading: productIsLoading, error: productFetchError } = useQuery({
+        queryKey: ['products'],
+        queryFn: () => getAllProducts({})
+    })
+
+    const categoryMutation = useMutation({
+        mutationFn: addNewCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categories"] }) // refresh cache
+        },
+    })
+    const handleAddCategory = () => {
+        // api call to add new category
+        categoryMutation.mutate({ category: newCategory });
+        setIsCategoryModalOpen(false);
+        setNewCategory('');
+
+    }
+
+    const addProductMutation = useMutation({
+        mutationFn: addNewProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["products"] }) // refresh cache
+        },
+    })
+
+    const handleAddProduct = (productData: ProductFormData) => {
+        // make api call to add product
+        addProductMutation.mutate(productData);
         setIsAddModalOpen(false);
-        console.log('Product added:', newProduct);
     };
 
     const handleEditProduct = (formData: ProductFormData) => {
         if (editingProduct) {
-            const updatedProduct: Product = {
-                ...editingProduct,
-                name: formData.name,
-                price: parseFloat(formData.price),
-                stock: parseInt(formData.stock),
-                category: formData.category,
-            };
-            setProducts(prev =>
-                (prev ?? []).map(p => p.id === editingProduct.id ? updatedProduct : p)
-            );
+            // make api call to update product
             setEditingProduct(null);
-            console.log('Product updated:', updatedProduct);
+            console.log('Product updated:', formData);
+            toast.success('Product updated successfully');
         }
     };
 
-    const handleDeleteProduct = (productId: string | number) => {
-        setProducts(prev => prev.filter(p => p.id !== productId));
-        console.log('Product deleted:', productId);
+    const deleteProductMutation = useMutation({
+        mutationFn: deleteProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["products"] }) // refresh cache
+        },
+    })
+
+    const handleDeleteProduct = (productId: string) => {
+        // make api call to delete product
+        deleteProductMutation.mutate(productId);
     };
 
     useEffect(() => {
-        setProducts(fetchProducts);
-    }, []);
+        // fetch and set products
+        setProducts(productData?.products);
+    }, [productData]);
+
+    // handle the toast message
+    useEffect(() => {
+        if (addProductMutation.isSuccess) {
+            toast.success(addProductMutation.data?.message || 'Product added successfully');
+            addProductMutation.reset();
+        }
+
+        if (addProductMutation.isError) {
+            toast.error(addProductMutation.error?.message || 'Error adding product');
+            addProductMutation.reset();
+        }
+
+        if (categoryMutation.isSuccess) {
+            toast.success(categoryMutation.data?.message || 'Category added successfully');
+            categoryMutation.reset();
+        }
+
+        if (categoryMutation.isError) {
+            toast.error(categoryMutation.error?.message || 'Error adding category');
+            categoryMutation.reset();
+        }
+
+        if (deleteProductMutation.isError) {
+            toast.error(deleteProductMutation.error?.message || 'Error deleting product');
+            deleteProductMutation.reset();
+        }
+
+        if (deleteProductMutation.isSuccess) {
+            toast.success(deleteProductMutation.data?.message || 'Product deleted successfully');
+            deleteProductMutation.reset();
+        }
+
+    }, [addProductMutation, categoryMutation, deleteProductMutation]);
+
+
+    if (productIsLoading) return (
+
+        <div className='w-full h-full flex items-center justify-center'>
+            <div className="loader flex flex-col items-center justify-center">
+                <Loader2 className='animate-spin text-primary' size={50} />
+                <p>Please wait while products are loading...</p>
+            </div>
+        </div>
+    )
+
+
+    if (productFetchError) return (
+        <div className='text-red-500 w-full h-full flex items-center justify-center'>
+            <p>{productFetchError?.message}</p>
+        </div>
+    )
 
 
     return (
@@ -84,29 +141,61 @@ export default function AllProducts() {
                     <p className="text-muted-foreground">Manage your product inventory</p>
                 </div>
 
-                {/* pop up for add product */}
-                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                    <DialogTrigger asChild>
-                        <Button data-testid="button-add-product">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Product
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
-                        <DialogHeader>
-                            <DialogTitle>Add New Product</DialogTitle>
-                        </DialogHeader>
-                        <ProductForm
-                            onSubmit={handleAddProduct}
-                            onCancel={() => setIsAddModalOpen(false)}
-                        />
-                    </DialogContent>
-                </Dialog>
+                <div className='flex items-center gap-x-4'>
+                    {/* pop up for add product */}
+                    <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                        <DialogTrigger asChild>
+                            <Button data-testid="button-add-product">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Product
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                            <DialogHeader>
+                                <DialogTitle>Add New Product</DialogTitle>
+                            </DialogHeader>
+                            <ProductForm
+                                onSubmit={handleAddProduct}
+                                onCancel={() => setIsAddModalOpen(false)}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* pop up for add category */}
+                    <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" data-testid="button-add-category">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add New Category
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                            <DialogHeader>
+                                <DialogTitle>Add New Category</DialogTitle>
+                            </DialogHeader>
+                            <div>
+                                <Input
+                                    type="text"
+                                    value={newCategory}
+                                    onChange={(e) => setNewCategory(e.target.value)}
+                                    placeholder="Enter category name"
+                                />
+                                <Button
+                                    disabled={!newCategory || categoryMutation.isPending}
+                                    onClick={handleAddCategory}
+                                    className='mt-4'
+                                >
+                                    Add Category
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
 
             {/* Products table */}
             <ProductDataTable
-                products={products}
+                products={products ?? []}
                 setEditingProduct={setEditingProduct}
                 handleDeleteProduct={handleDeleteProduct}
             />
@@ -119,14 +208,7 @@ export default function AllProducts() {
                     </DialogHeader>
                     {editingProduct && (
                         <ProductForm
-                            initialData={{
-                                name: editingProduct.name,
-                                price: editingProduct.price.toString(),
-                                stock: editingProduct.stock.toString(),
-                                category: editingProduct.category,
-                                description: "",
-                                images: [],
-                            }}
+                            initialData={editingProduct}
                             onSubmit={handleEditProduct}
                             onCancel={() => setEditingProduct(null)}
                             submitLabel="Update Product"

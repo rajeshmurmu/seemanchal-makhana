@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     description: {
       type: String,
       requied: true,
@@ -17,9 +22,14 @@ const productSchema = new mongoose.Schema(
     originalPrice: {
       type: Number,
     },
-    image: {
-      type: String,
-      required: true,
+    images: {
+      type: [
+        {
+          type: String,
+          required: true,
+        },
+      ],
+      default: [],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,15 +42,15 @@ const productSchema = new mongoose.Schema(
     },
     reviewCount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     inStock: {
       type: Boolean,
-      required: true,
+      default: true,
     },
     featured: {
       type: Boolean,
-      required: true,
+      default: false,
     },
   },
   { timestamps: true }
@@ -48,5 +58,7 @@ const productSchema = new mongoose.Schema(
 
 const Product =
   mongoose.models.Product || mongoose.model("Product", productSchema);
+
+export type ProductType = mongoose.InferSchemaType<typeof productSchema>;
 
 export default Product;

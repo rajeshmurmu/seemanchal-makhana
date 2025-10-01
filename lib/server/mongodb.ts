@@ -25,7 +25,9 @@ async function connectDB() {
   }
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
+      bufferCommands: false, // disable mongoose buffering
+      // serverSelectionTimeoutMS: 5000, // fail fast if cannot connect
+      maxPoolSize: 10, // good for serverless
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

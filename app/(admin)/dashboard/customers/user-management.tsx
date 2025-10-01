@@ -67,13 +67,9 @@ const dbUsers: User[] = [
 
 export default function UserManagement() {
     const [users, setUsers] = useState<User[]>([]);
-    const [search, setSearch] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(event.target.value);
-    };
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);

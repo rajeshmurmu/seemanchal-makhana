@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { User, LogOut, Settings, ShoppingBag, Heart } from "lucide-react"
+import { User, LogOut, Settings, ShoppingBag, Heart, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/lib/auth-context"
 import { AuthModal } from "../auth/auth-modal"
+import Link from "next/link"
 
 export function UserMenu() {
     const { user, logout } = useAuth()
@@ -33,11 +34,11 @@ export function UserMenu() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                        <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name as string} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                            {user.name.charAt(0).toUpperCase()}
+                            {user?.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                 </Button>
@@ -50,20 +51,30 @@ export function UserMenu() {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                     <ShoppingBag className="mr-2 h-4 w-4" />
                     <span>My Orders</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                     <Heart className="mr-2 h-4 w-4" />
                     <span>Wishlist</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Account Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
+                {
+                    user.role === "admin" && (
+                        <DropdownMenuItem>
+                            <Link href="/dashboard" className="flex items-center gap-x-2">
+                                <LayoutDashboard className="mr-2 h-4 w-4" />
+                                <span>Admin Panel</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )
+                }
+                <DropdownMenuItem className="cursor-pointer" onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

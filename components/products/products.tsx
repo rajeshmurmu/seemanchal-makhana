@@ -3,10 +3,36 @@
 import Link from "next/link"
 import { Button } from "../ui/button"
 import { ProductCard } from "./product-card"
-import { products } from "@/lib/data"
+import { useQuery } from "@tanstack/react-query"
+import { getAllProducts } from "@/lib/client/product-api"
+import { useEffect, useState } from "react"
+import { ResponseProductType } from "@/types/types"
+import ProductCardSkeleton from "../skeletons/product-card-skeleton"
 
 export function Products() {
-  products.length = 3
+  const [products, setProducts] = useState<ResponseProductType[]>([])
+  const { data, isLoading, error, isError, refetch } = useQuery({
+    queryKey: ['home-products'],
+    queryFn: () => getAllProducts({})
+  })
+
+  useEffect(() => {
+    if (data) {
+      setProducts(data.products || [])
+    }
+  }, [data])
+
+  useEffect(() => {
+    if (error || isError) {
+      refetch()
+      setProducts([])
+
+    }
+  }, [error, isError, refetch])
+
+
+
+
   return (
     <section className="py-16 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -17,9 +43,17 @@ export function Products() {
           </p>
         </div>
 
+        {isLoading && (
+          //Products Grid Skeleton 
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+            {[...Array(4)].map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
 
@@ -29,6 +63,6 @@ export function Products() {
           </Link>
         </div>
       </div>
-    </section>
+    </section >
   )
 }

@@ -3,15 +3,17 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 import React from 'react'
-import { Product } from './page'
+
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
+import { ProductFormData, ProductWithAdditionalFields } from '@/types/types';
+import { Badge } from '@/components/ui/badge';
 
 
 interface Iprops {
-    products: Product[],
-    setEditingProduct: (product: Product) => void,
-    handleDeleteProduct: (id: number | string) => void
+    products: ProductWithAdditionalFields[],
+    setEditingProduct: (product: ProductWithAdditionalFields | ProductFormData) => void,
+    handleDeleteProduct: (id: | string) => void
 }
 
 
@@ -19,10 +21,10 @@ export default function ProductDataTable({ products, setEditingProduct, handleDe
     const columns = [
         { key: 'id', label: 'ID' },
         { key: 'name', label: 'Product Name' },
-        { key: 'price', label: 'Price' },
+        { key: 'originalPrice', label: 'Original Price' },
+        { key: 'sellingPrice', label: 'Selling Price' },
         { key: 'stock', label: 'Stock' },
         { key: 'category', label: 'Category' },
-        { key: 'status', label: 'Status' },
     ];
 
     return (
@@ -39,14 +41,21 @@ export default function ProductDataTable({ products, setEditingProduct, handleDe
                 </TableHeader>
                 <TableBody>
                     {
-                        products.map((product: Product) => (
-                            <TableRow key={product.id}>
-                                <TableCell>{product.id}</TableCell>
-                                <TableCell>{product.name}</TableCell>
-                                <TableCell>{product.price}</TableCell>
-                                <TableCell>{product.stock}</TableCell>
-                                <TableCell>{product.category}</TableCell>
-                                <TableCell>{product.status}</TableCell>
+                        products && products?.map((product: ProductWithAdditionalFields) => (
+                            <TableRow key={product?._id}>
+                                <TableCell>{product?._id}</TableCell>
+                                <TableCell>{product?.name}</TableCell>
+                                <TableCell>{product?.originalPrice}</TableCell>
+                                <TableCell>{product?.price}</TableCell>
+                                <TableCell>{product?.inStock ?
+                                    <Badge
+                                        className='bg-green-600 text-white' variant={"outline"}>Available
+                                    </Badge> :
+                                    <Badge className='text-white' variant={"destructive"}>
+                                        Out of Stock
+                                    </Badge>}
+                                </TableCell>
+                                <TableCell>{product?.category}</TableCell>
                                 <TableCell>
 
                                     <div className="flex items-center gap-2">
@@ -61,7 +70,7 @@ export default function ProductDataTable({ products, setEditingProduct, handleDe
                                         <Button
                                             variant="destructive"
                                             size="sm"
-                                            onClick={() => handleDeleteProduct(product.id)}
+                                            onClick={() => handleDeleteProduct(product._id)}
                                             data-testid={`button-delete-product-${product.name}`}
                                         >
                                             <Trash2 className="h-4 w-4" />

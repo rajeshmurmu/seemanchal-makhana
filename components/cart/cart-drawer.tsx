@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/lib/cart-context"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import Image from "next/image"
 
 export function CartDrawer() {
@@ -26,10 +26,6 @@ export function CartDrawer() {
   const totalPrice = getTotalPrice()
 
   const handleCheckout = () => {
-    // toast({
-    //   title: "Checkout",
-    //   description: "Checkout functionality will be implemented soon!",
-    // })
     toast.success("Checkout functionality will be implemented soon!")
   }
 
@@ -72,9 +68,9 @@ export function CartDrawer() {
               <div className="flex-1 overflow-auto py-4">
                 <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                    <div key={item.product._id} className="flex items-center space-x-4 p-4 border rounded-lg">
                       <Image
-                        src={item.product.image || "/placeholder.svg"}
+                        src={item.product.images && item.product.images[0] as string || "/placeholder.svg"}
                         alt={item.product.name}
                         className="w-16 h-16 object-cover rounded-md"
                         width={500}
@@ -92,7 +88,7 @@ export function CartDrawer() {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={() => removeFromCart(item.product.id)}
+                          onClick={() => removeFromCart(item.product._id)}
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -102,7 +98,7 @@ export function CartDrawer() {
                             variant="outline"
                             size="icon"
                             className="h-6 w-6 bg-transparent"
-                            onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
@@ -111,7 +107,7 @@ export function CartDrawer() {
                             variant="outline"
                             size="icon"
                             className="h-6 w-6 bg-transparent"
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>

@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import z from "zod"
-import { registerSchema } from "@/lib/validation/auth.validator"
+import { registerSchema } from "@/shared/schema/register-schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 interface SignupFormProps {
@@ -39,18 +39,13 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     const { name, email, password } = values
 
-
     const success = await signup(name, email, password)
 
     if (success) {
-      toast.success("Welcome to Seemanchal Makhana", {
-        description: "Your account has been created successfully.",
-      })
+      toast.success("Your account has been created successfully.")
       onSuccess?.()
     } else {
-      toast.error("Signup failed", {
-        description: "Unable to create account. Please try again.",
-      })
+      toast.error("Unable to create account. Please try again.")
     }
   }
 
@@ -175,16 +170,16 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
 
-            <div className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Button variant="link" className="p-0 h-auto text-primary" onClick={onSwitchToLogin}>
-                Sign in
-              </Button>
-            </div>
           </CardFooter>
         </form>
 
       </Form>
+      <div className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Button variant="link" className="p-0 h-auto text-primary cursor-pointer" onClick={onSwitchToLogin}>
+          Sign in
+        </Button>
+      </div>
     </Card>
   )
 }

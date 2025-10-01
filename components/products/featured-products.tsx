@@ -1,10 +1,34 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
 import { ProductCard } from "./product-card"
-import { products } from "@/lib/data"
+import { getAllProducts } from "@/lib/client/product-api"
+import { useEffect, useState } from "react"
+import { ResponseProductType } from "@/types/types"
+import ProductSectionSkeleton from "../skeletons/product-section-skeleton"
 
 export function FeaturedProducts() {
-    const featuredProducts = products.filter((product) => product.featured)
+    // const featuredProducts = products.filter((product) => product.featured)
+
+    const [featuredProducts, setFeaturedProducts] = useState<ResponseProductType[]>([])
+    const { data, isLoading, error, isError, refetch } = useQuery({
+        queryKey: ['featured-products'],
+        queryFn: () => getAllProducts({ featured: "true" })
+    })
+
+
+    useEffect(() => {
+        if (data) {
+            setFeaturedProducts(data.products || [])
+        }
+    }, [data])
+
+    useEffect(() => {
+        if (error || isError) {
+            refetch()
+            setFeaturedProducts([])
+        }
+    }, [error, isError, refetch])
 
     return (
         <section className="py-16 bg-muted/30">
@@ -17,9 +41,10 @@ export function FeaturedProducts() {
                     </p>
                 </div>
 
+                {isLoading && <ProductSectionSkeleton />}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
                     {featuredProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product._id} product={product} />
                     ))}
                 </div>
             </div>

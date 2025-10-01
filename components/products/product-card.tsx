@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/cart-context"
-import type { Product } from "@/lib/types"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import Image from "next/image"
+import { ResponseProductType } from "@/types/types"
+
+
 
 interface ProductCardProps {
-    product: Product
+    product: ResponseProductType
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -25,18 +27,15 @@ export function ProductCard({ product }: ProductCardProps) {
         if (!product.inStock) return
 
         addToCart(product)
-        toast.success("Added to cart!", {
-            description: `${product.name} has been added to your cart.`,
-            className: "bg-primary text-background",
-        })
+        toast.success(`${product.name} has been added to your cart.`)
     }
 
     return (
         <Card className="group gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
             <div className="relative overflow-hidden">
-                <Link href={`/products/${product.id}`}>
+                <Link href={`/products/${product.slug}`}>
                     <Image
-                        src={product.image || "/placeholder.svg"}
+                        src={product.images && product.images[0] as string || "/placeholder.jpg"}
                         alt={product.name}
                         className="w-full h-48 md:h-72 object-cover group-hover:scale-105 transition-transform duration-300"
                         width={500}
@@ -61,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">{product.category}</div>
 
-                    <Link href={`/products/${product.id}`}>
+                    <Link href={`/products/${product.slug}`}>
                         <h3 className="font-semibold text-sm text-nowrap md:text-lg hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
                     </Link>
 

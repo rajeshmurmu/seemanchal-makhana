@@ -1,4 +1,18 @@
-import type { Product, Review } from "./types";
+import type { Review } from "../types/types";
+
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  category: string;
+  rating: number;
+  reviewCount: number;
+  inStock: boolean;
+  featured?: boolean;
+};
 
 export const products: Product[] = [
   {
@@ -79,6 +93,7 @@ export const products: Product[] = [
     rating: 4.8,
     reviewCount: 145,
     inStock: true,
+    featured: true,
   },
 ];
 

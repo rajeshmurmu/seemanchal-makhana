@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { loginSchema } from "@/lib/validation/auth.validator"
+import { loginSchema } from "@/shared/schema/register-schema"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
 import z from "zod"
 
@@ -21,7 +21,6 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
-
   const [showPassword, setShowPassword] = useState(false)
   const { login, isLoading } = useAuth()
   const form = useForm({
@@ -36,18 +35,13 @@ export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     const { email, password } = values
 
-
     const success = await login(email, password)
 
     if (success) {
-      toast.success("Login Successful", {
-        description: "You have been successfully logged in.",
-      })
+      toast.success("You have been successfully logged in.")
       onSuccess?.()
     } else {
-      toast.error("Invalid Credentials", {
-        description: "Invalid email or password. Please try again.",
-      })
+      toast.error("Invalid email or password. Please try again.")
     }
   }
 
@@ -120,15 +114,17 @@ export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
 
-            <div className="text-center text-sm text-muted-foreground">
-              {"Don't have an account? "}
-              <Button variant="link" className="p-0 h-auto text-primary" onClick={onSwitchToSignup}>
-                Sign up
-              </Button>
-            </div>
           </CardFooter>
         </form>
       </Form>
+
+
+      <div className="text-center text-sm text-muted-foreground">
+        {"Don't have an account? "}
+        <Button variant="link" className="p-0 h-auto text-primary cursor-pointer" onClick={onSwitchToSignup}>
+          Sign up
+        </Button>
+      </div>
     </Card>
   )
 }

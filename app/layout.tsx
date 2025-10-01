@@ -1,8 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Roboto } from "next/font/google"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "./globals.css"
+import Providers from "@/lib/providers"
+import { Toaster } from "react-hot-toast"
 
 
 const roboto = Roboto({
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
     generator: "Next.js",
 }
 
-const queryClient = new QueryClient()
+
 
 export default function RootLayout({
     children,
@@ -27,12 +28,14 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        // <QueryClientProvider client={queryClient}>
-        <html lang="en">
-            <body className={`${roboto.className} font-sans`}>
-                {children}
-            </body>
-        </html>
-        // </QueryClientProvider>
+        <Providers>
+            <html lang="en">
+                <body className={`${roboto.className} font-sans`}>
+                    {children}
+                    <Toaster position="bottom-right" toastOptions={{ duration: 5000 }} reverseOrder={false} />
+                </body>
+            </html>
+        </Providers>
+
     )
 }

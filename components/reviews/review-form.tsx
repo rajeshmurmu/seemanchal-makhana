@@ -7,13 +7,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
 import { AuthModal } from "../auth/auth-modal"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 
 interface ReviewFormProps {
   productId: string
   onReviewSubmitted?: () => void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
@@ -32,16 +33,12 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
     }
 
     if (rating === 0) {
-      toast.warning("Rating required", {
-        description: "Please select a rating before submitting your review.",
-      })
+      toast.error("Please select a rating before submitting your review.")
       return
     }
 
     if (!comment.trim()) {
-      toast.warning("Comment required", {
-        description: "Please write a comment about the product.",
-      })
+      toast.error("Please write a comment about the product.")
       return
     }
 
@@ -50,9 +47,7 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    toast.success("Review submitted!", {
-      description: "Thank you for your feedback. Your review will be published shortly.",
-    })
+    toast.success("Thank you for your feedback. Your review will be published shortly.")
 
     // Reset form
     setRating(0)

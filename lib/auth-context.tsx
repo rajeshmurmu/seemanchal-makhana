@@ -1,10 +1,13 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { User } from "./types"
+import type { SessionUser } from "../types/types"
+import { registerUser } from "./client/auth-api-client"
+import { getSession, signIn, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface AuthContextType {
-    user: User | null
+    user: SessionUser | null
     login: (email: string, password: string) => Promise<boolean>
     signup: (name: string, email: string, password: string) => Promise<boolean>
     logout: () => void
@@ -14,8 +17,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
+    const [user, setUser] = useState<SessionUser | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const router = useRouter()
 
     useEffect(() => {
         // Check for stored user session
@@ -27,56 +31,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        setIsLoading(true)
+        try {
+            setIsLoading(true)
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+            const result = await signIn("credentials", {
+                redirect: false, // prevent full-page redirect
+                email,
+                password,
+            })
 
-        // Mock authentication - in real app, this would be an API call
-        if (email && password) {
-            const mockUser: User = {
-                id: "1",
-                name: email.split("@")[0],
-                email: email,
-                avatar: "/diverse-user-avatars.png",
+            if (result?.error) {
+                console.error("Login failed: " + result.error)
+                return false
+            }
+            else {
+                const session = await getSession()
+                if (session) {
+                    setUser(session.user)
+                    localStorage.setItem("user", JSON.stringify(session.user))
+                    console.log("User logged in:", session.user)
+                    if (session.user.role === "admin") {
+                        router.push("/dashboard")
+                    }
+                    return true
+                }
             }
 
-            setUser(mockUser)
-            localStorage.setItem("user", JSON.stringify(mockUser))
             setIsLoading(false)
+            router.push("/")
             return true
-        }
+        } catch (error) {
+            console.error("Error logging in:", error)
+            return false
 
-        setIsLoading(false)
-        return false
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const signup = async (name: string, email: string, password: string): Promise<boolean> => {
-        setIsLoading(true)
+        try {
+            setIsLoading(true)
+            const res = await registerUser({ name, email, password, })
+            if (res.status !== 200) {
+                console.error("Error logging in:", res.statusText)
+                return false
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Mock registration - in real app, this would be an API call
-        if (name && email && password) {
-            const mockUser: User = {
-                id: Date.now().toString(),
-                name: name,
-                email: email,
-                avatar: "/diverse-user-avatars.png",
             }
 
-            setUser(mockUser)
-            localStorage.setItem("user", JSON.stringify(mockUser))
-            setIsLoading(false)
-            return true
-        }
+            // login user automatically
+            const result = await signIn("credentials", {
+                email,
+                password,
+                redirect: false
+            })
 
-        setIsLoading(false)
-        return false
+            // if login failed redirect to login
+            if (result?.error || result?.ok === false || result?.status !== 200) {
+                console.error("Login failed: " + result?.error)
+                router.push("/auth/login")
+                return false
+            }
+
+            // if login success get the session and store the user in localstorage
+            const session = await getSession()
+            if (session) {
+                setUser(session.user)
+                localStorage.setItem("user", JSON.stringify(session.user))
+            }
+            return true
+        } catch (error) {
+            console.error("Error logging in:", error)
+            return false
+        } finally {
+            setIsLoading(false)
+        }
     }
 
-    const logout = () => {
+    const logout = async () => {
+        await signOut()
         setUser(null)
         localStorage.removeItem("user")
     }

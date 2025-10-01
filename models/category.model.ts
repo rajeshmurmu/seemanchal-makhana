@@ -8,7 +8,6 @@ const categorySchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
     },
     products: [
       {
@@ -21,7 +20,8 @@ const categorySchema = new mongoose.Schema(
 );
 
 const Category =
-  mongoose.models.Category ||
-  mongoose.model("Category", categorySchema, "categories");
+  mongoose.models.Category || mongoose.model("Category", categorySchema);
+
+export default Category;
 
 export type Category = mongoose.InferSchemaType<typeof categorySchema>;
