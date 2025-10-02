@@ -5,6 +5,7 @@ import type { SessionUser } from "../types/types"
 import { registerUser } from "./client/auth-api-client"
 import { getSession, signIn, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 interface AuthContextType {
     user: SessionUser | null
@@ -49,16 +50,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (session) {
                     setUser(session.user)
                     localStorage.setItem("user", JSON.stringify(session.user))
-                    console.log("User logged in:", session.user)
+                    toast.success("You have been successfully logged in.")
                     if (session.user.role === "admin") {
                         router.push("/dashboard")
                     }
-                    return true
                 }
             }
 
             setIsLoading(false)
-            router.push("/")
+            router.push(result?.url || "/")
             return true
         } catch (error) {
             console.error("Error logging in:", error)
@@ -79,6 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             }
 
+
+
             // login user automatically
             const result = await signIn("credentials", {
                 email,
@@ -90,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (result?.error) {
                 console.error("Login failed: " + result?.error)
                 router.push("/auth/login")
-                return false
+
             }
 
             // if login success get the session and store the user in localstorage
@@ -98,7 +100,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (session) {
                 setUser(session.user)
                 localStorage.setItem("user", JSON.stringify(session.user))
+                if (session.user.role === "admin") {
+                    router.push("/dashboard")
+                }
             }
+
+            setIsLoading(false)
+            toast.success("You have been registered and logged in successfully.")
+            router.push(result?.url || "/")
             return true
         } catch (error) {
             console.error("Error logging in:", error)
