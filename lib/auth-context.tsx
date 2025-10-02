@@ -39,10 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 redirect: false, // prevent full-page redirect
                 email,
                 password,
+                callbackUrl: "/"
             })
 
             if (result?.error) {
                 console.error("Login failed: " + result.error)
+                toast.error("Login failed. Please try again.")
                 return false
             }
             else {
@@ -50,15 +52,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (session) {
                     setUser(session.user)
                     localStorage.setItem("user", JSON.stringify(session.user))
-                    toast.success("You have been successfully logged in.")
                     if (session.user.role === "admin") {
                         router.push("/dashboard")
                     }
                 }
             }
 
+            toast.success("You have been successfully logged in.")
             setIsLoading(false)
-            router.push(result?.url || "/")
+            router.push("/")
             return true
         } catch (error) {
             console.error("Error logging in:", error)
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const res = await registerUser({ name, email, password, })
             if (res.status !== 200) {
                 console.error("Error logging in:", res.statusText)
+                toast.error("Unable to create account. Please try again.")
                 return false
 
             }
@@ -85,12 +88,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const result = await signIn("credentials", {
                 email,
                 password,
-                redirect: false
+                redirect: false,
+                callbackUrl: "/"
             })
 
             // if login failed redirect to login
             if (result?.error) {
                 console.error("Login failed: " + result?.error)
+                toast.error("Account created successfully... please login.")
                 router.push("/auth/login")
 
             }
