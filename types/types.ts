@@ -18,10 +18,7 @@ export interface ProductWithAdditionalFields extends ProductFormData {
   featured?: boolean;
 }
 
-export type ResponseProductType = Omit<
-  ProductWithAdditionalFields,
-  "images"
-> & {
+export type ResponseProductType = ProductWithAdditionalFields & {
   images: string[];
 };
 

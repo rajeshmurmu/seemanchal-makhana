@@ -32,7 +32,7 @@ export interface ProductFormProps {
     onSubmit: (data: ProductFormData) => void;
 }
 
-export default function ProductForm({
+export default function EditProductForm({
     initialData,
     onSubmit,
     onCancel,
@@ -76,6 +76,9 @@ export default function ProductForm({
 
         //append multiple images
         data?.images?.forEach((file) => {
+            if (typeof file === 'string') {
+                return
+            }
             formData.append("images", file);
         });
 
@@ -261,15 +264,15 @@ export default function ProductForm({
                             {/* show the selected images */}
                             {productImages && productImages?.length as number > 0 ? (
                                 <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-                                    {(productImages as File[]).map((file, index) => (
+                                    {(productImages as File[] | string[]).map((file, index) => (
                                         <div key={index} className="relative group">
                                             <div className="aspect-square bg-muted rounded-md flex items-center justify-center">
                                                 {/* <span className="text-xs text-muted-foreground text-center p-2">
                                                     {file.name}
                                                 </span> */}
                                                 <Image
-                                                    src={URL.createObjectURL(file)}
-                                                    alt={file.name}
+                                                    src={file instanceof File ? URL.createObjectURL(file) : file}
+                                                    alt={file instanceof File ? file.name : "Product Image"}
                                                     className="w-full h-full object-cover rounded-md"
                                                     width={500}
                                                     height={500}
@@ -280,7 +283,7 @@ export default function ProductForm({
                                                 type="button"
                                                 onClick={() => {
                                                     // remove the image
-                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[] | string[])
+                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[] | string[]);
                                                 }}
                                                 className="absolute -top-2 -right-2 bg-red-500 text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                                 data-testid={`button-remove-image-${index}`}

@@ -6,13 +6,13 @@ import React from 'react'
 
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
-import { ProductFormData, ProductWithAdditionalFields } from '@/types/types';
+import { ResponseProductType } from '@/types/types';
 import { Badge } from '@/components/ui/badge';
 
 
 interface Iprops {
-    products: ProductWithAdditionalFields[],
-    setEditingProduct: (product: ProductWithAdditionalFields | ProductFormData) => void,
+    products: ResponseProductType[],
+    setEditingProduct: (product: ResponseProductType) => void,
     handleDeleteProduct: (id: | string) => void
 }
 
@@ -41,7 +41,7 @@ export default function ProductDataTable({ products, setEditingProduct, handleDe
                 </TableHeader>
                 <TableBody>
                     {
-                        products && products?.map((product: ProductWithAdditionalFields) => (
+                        products && products?.map((product) => (
                             <TableRow key={product?._id}>
                                 <TableCell>{product?._id}</TableCell>
                                 <TableCell>{product?.name}</TableCell>

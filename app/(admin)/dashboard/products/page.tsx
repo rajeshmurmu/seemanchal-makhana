@@ -7,18 +7,21 @@ import React, { useEffect, useState } from 'react'
 import ProductForm from '../../components/product-form'
 import ProductDataTable from './product-data-table'
 import toast from 'react-hot-toast'
-import { ProductFormData, ProductWithAdditionalFields } from '@/types/types'
+import { ProductFormData, ResponseProductType } from '@/types/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addNewCategory, addNewProduct, deleteProduct, getAllProducts } from '@/lib/client/product-api'
 import { Input } from '@/components/ui/input'
+import EditProductForm from '../../components/edit-product-form'
+
+
 
 export default function AllProducts() {
 
     const queryClient = useQueryClient();
-    const [products, setProducts] = useState<ProductWithAdditionalFields[]>([]);
+    const [products, setProducts] = useState<ResponseProductType[] | []>([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<ProductFormData | null>(null);
+    const [editingProduct, setEditingProduct] = useState<ResponseProductType | null>(null);
     const [newCategory, setNewCategory] = useState<string>('');
 
 
@@ -207,7 +210,7 @@ export default function AllProducts() {
                         <DialogTitle>Edit Product</DialogTitle>
                     </DialogHeader>
                     {editingProduct && (
-                        <ProductForm
+                        <EditProductForm
                             initialData={editingProduct}
                             onSubmit={handleEditProduct}
                             onCancel={() => setEditingProduct(null)}
