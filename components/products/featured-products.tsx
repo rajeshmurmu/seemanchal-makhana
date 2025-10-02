@@ -5,7 +5,7 @@ import { ProductCard } from "./product-card"
 import { getAllProducts } from "@/lib/client/product-api"
 import { useEffect, useState } from "react"
 import { ResponseProductType } from "@/types/types"
-import ProductSectionSkeleton from "../skeletons/product-section-skeleton"
+import ProductCardSkeleton from "../skeletons/product-card-skeleton"
 
 export function FeaturedProducts() {
     // const featuredProducts = products.filter((product) => product.featured)
@@ -41,12 +41,20 @@ export function FeaturedProducts() {
                     </p>
                 </div>
 
-                {isLoading && <ProductSectionSkeleton />}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
-                    {featuredProducts.map((product) => (
-                        <ProductCard key={product._id} product={product} />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+                        {[...Array(4)].map((_, i) => (
+                            <ProductCardSkeleton key={i} />
+                        ))}
+                    </div>
+                ) : (
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+                        {featuredProducts.map((product) => (
+                            <ProductCard key={product._id} product={product} />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     )
