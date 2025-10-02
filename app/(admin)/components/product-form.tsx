@@ -280,7 +280,7 @@ export default function ProductForm({
                                                 type="button"
                                                 onClick={() => {
                                                     // remove the image
-                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[] | string[])
+                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[])
                                                 }}
                                                 className="absolute -top-2 -right-2 bg-red-500 text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                                 data-testid={`button-remove-image-${index}`}

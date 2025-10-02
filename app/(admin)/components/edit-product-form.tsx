@@ -16,27 +16,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { productSchema } from "@/shared/schema/product-schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Category, ProductFormData, ProductWithAdditionalFields } from "@/types/types";
+import { Category, ProductFormData, ProductWithAdditionalFields, ResponseProductType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import { getAllCategories } from "@/lib/client/product-api";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 
 
 export interface ProductFormProps {
-    initialData?: Partial<ProductFormData | ProductWithAdditionalFields>;
+    initialData?: ResponseProductType | ProductWithAdditionalFields;
     onCancel?: () => void;
     submitLabel?: string;
     onSubmit: (data: ProductFormData) => void;
 }
 
+
+
 export default function EditProductForm({
     initialData,
     onSubmit,
     onCancel,
-    submitLabel = "Save Product"
+    submitLabel = "Update Product"
 }: ProductFormProps) {
 
     const { data: fetchedCategories } = useQuery({
@@ -52,13 +54,15 @@ export default function EditProductForm({
             price: Number(initialData?.price) || 0,
             originalPrice: Number(initialData?.originalPrice) || 0,
             category: initialData?.category || "",
-            images: initialData?.images || [],
+            images: [],
             inStock: initialData?.inStock || false,
             featured: initialData?.featured || false
         }
     })
 
-    const productImages = formData.watch("images");
+
+    const [uploadedProductImages] = useState<string[]>(initialData?.images as string[] || [])
+    const productImages = formData.watch("images") as File[]
 
     const categories: Category[] = fetchedCategories?.categories || []
 
@@ -76,12 +80,10 @@ export default function EditProductForm({
 
         //append multiple images
         data?.images?.forEach((file) => {
-            if (typeof file === 'string') {
-                return
+            if (file instanceof File) {
+                formData.append("images", file);
             }
-            formData.append("images", file);
         });
-
         onSubmit(formData as unknown as ProductFormData);
     };
 
@@ -259,20 +261,19 @@ export default function EditProductForm({
 
                         </div>
 
-                        {/* handle the product images */}
                         <div className="space-y-2">
-                            {/* show the selected images */}
-                            {productImages && productImages?.length as number > 0 ? (
+                            <h1>Product Images</h1>
+                            {initialData?.images?.length as number > 0 && (
                                 <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-                                    {(productImages as File[] | string[]).map((file, index) => (
+                                    {(uploadedProductImages as string[]).map((file, index) => (
                                         <div key={index} className="relative group">
                                             <div className="aspect-square bg-muted rounded-md flex items-center justify-center">
                                                 {/* <span className="text-xs text-muted-foreground text-center p-2">
                                                     {file.name}
                                                 </span> */}
                                                 <Image
-                                                    src={file instanceof File ? URL.createObjectURL(file) : file}
-                                                    alt={file instanceof File ? file.name : "Product Image"}
+                                                    src={file}
+                                                    alt={"Product Image"}
                                                     className="w-full h-full object-cover rounded-md"
                                                     width={500}
                                                     height={500}
@@ -280,10 +281,11 @@ export default function EditProductForm({
 
                                             </div>
                                             <button
+                                                name="remove-image"
                                                 type="button"
                                                 onClick={() => {
                                                     // remove the image
-                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[] | string[]);
+                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[]);
                                                 }}
                                                 className="absolute -top-2 -right-2 bg-red-500 text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                                 data-testid={`button-remove-image-${index}`}
@@ -291,6 +293,43 @@ export default function EditProductForm({
                                                 <X className="text-white h-3 w-3" />
                                             </button>
                                         </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* handle the product images */}
+                        <div className="space-y-2">
+                            {/* show the selected images */}
+
+                            {productImages && productImages?.length as number > 0 ? (
+                                <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
+                                    {productImages && productImages.map((file, index) => (
+                                        file instanceof File && (
+                                            <div key={index} className="relative group">
+                                                <div className="aspect-square bg-muted rounded-md flex items-center justify-center">
+                                                    <Image
+                                                        src={URL.createObjectURL(file)}
+                                                        alt={file.name ?? "Product Image"}
+                                                        className="w-full h-full object-cover rounded-md"
+                                                        width={500}
+                                                        height={500}
+                                                    />
+
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        // remove the image
+                                                        formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[]);
+                                                    }}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                                    data-testid={`button-remove-image-${index}`}
+                                                >
+                                                    <X className="text-white h-3 w-3" />
+                                                </button>
+                                            </div>
+                                        )
                                     ))}
 
                                     {/* add one functionality */}
@@ -303,13 +342,13 @@ export default function EditProductForm({
                                                     <FormControl>
                                                         <Input
                                                             type="file"
-                                                            multiple={false}
+                                                            multiple={true}
                                                             accept="image/*"
                                                             className="hidden"
                                                             id="image-upload-single"
                                                             onChange={(e) => {
-                                                                const images = formData.getValues("images") as File[];
-                                                                images?.push(e.target.files?.[0] as File);
+                                                                const images = formData.getValues("images") as File[] | string[];
+                                                                images?.push(e.target.files?.[0] as File & string);
                                                                 field.onChange(images);
 
                                                             }}
@@ -349,13 +388,13 @@ export default function EditProductForm({
                                                             }}
                                                         />
                                                     </FormControl>
+                                                    <FormMessage />
                                                     <label htmlFor="image-upload" className="cursor-pointer">
                                                         <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
                                                         <p className="text-sm text-muted-foreground">
                                                             Click to upload images or drag and drop
                                                         </p>
                                                     </label>
-                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />

@@ -9,7 +9,7 @@ import ProductDataTable from './product-data-table'
 import toast from 'react-hot-toast'
 import { ProductFormData, ResponseProductType } from '@/types/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { addNewCategory, addNewProduct, deleteProduct, getAllProducts } from '@/lib/client/product-api'
+import { addNewCategory, addNewProduct, deleteProduct, getAllProducts, updateProduct } from '@/lib/client/product-api'
 import { Input } from '@/components/ui/input'
 import EditProductForm from '../../components/edit-product-form'
 
@@ -57,13 +57,16 @@ export default function AllProducts() {
         setIsAddModalOpen(false);
     };
 
+    const updateProductMutation = useMutation({
+        mutationFn: updateProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["products"] }) // refresh cache
+        },
+    })
     const handleEditProduct = (formData: ProductFormData) => {
-        if (editingProduct) {
-            // make api call to update product
-            setEditingProduct(null);
-            console.log('Product updated:', formData);
-            toast.success('Product updated successfully');
-        }
+        // make api call to update product
+        updateProductMutation.mutate({ productId: editingProduct?._id, data: formData });
+        setEditingProduct(null);
     };
 
     const deleteProductMutation = useMutation({

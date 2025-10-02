@@ -1,4 +1,4 @@
-import { ProductFormData } from "@/types/types";
+import { ProductFormData, ResponseProductType } from "@/types/types";
 import apiClient from "./axios-client";
 import { AxiosError } from "axios";
 
@@ -93,12 +93,19 @@ export const deleteProduct = async (productId: string) => {
   }
 };
 
-export const updateProduct = async (
-  data: ProductFormData,
-  productId: string
-) => {
+export const updateProduct = async ({
+  productId,
+  data,
+}: {
+  data: Partial<ProductFormData | ResponseProductType>;
+  productId: string | undefined;
+}) => {
   try {
-    const res = await apiClient.put(`/api/admin/products/${productId}`, data);
+    const res = await apiClient.put(`/api/admin/products/${productId}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     if (res.status !== 200) {
       throw new Error("Failed to update product");
