@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             })
 
             // if login failed redirect to login
-            if (result?.error || result?.ok === false || result?.status !== 200) {
+            if (result?.error) {
                 console.error("Login failed: " + result?.error)
                 router.push("/auth/login")
                 return false
