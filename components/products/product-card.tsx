@@ -31,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     return (
-        <Card className="group gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
+        <Card className="group w-[45%] lg:w-xs gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
             <div className="relative overflow-hidden">
                 <Link href={`/products/${product.slug}`}>
                     <Image

@@ -61,7 +61,7 @@ export function AllProducts() {
                         </>
 
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+                        <div className="flex flex-wrap justify-center gap-4 mx-auto">
                             {products?.map((product: ResponseProductType) => (
                                 <ProductCard key={product._id} product={product} />
                             ))}
