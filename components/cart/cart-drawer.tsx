@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/lib/cart-context"
-import toast from "react-hot-toast"
 import Image from "next/image"
+import CheckoutButton from "../razorpay/checkout-button"
 
 export function CartDrawer() {
   const { items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart()
@@ -25,9 +25,6 @@ export function CartDrawer() {
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
 
-  const handleCheckout = () => {
-    toast.success("Checkout functionality will be implemented soon!")
-  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -133,9 +130,7 @@ export function CartDrawer() {
                 <Separator />
 
                 <SheetFooter>
-                  <Button className="w-full" onClick={handleCheckout}>
-                    Proceed to Checkout
-                  </Button>
+                  <CheckoutButton items={items} buttonText="Proceed to Checkout" amount={Number(totalPrice) * 100} />
                 </SheetFooter>
               </div>
             </>

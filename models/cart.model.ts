@@ -7,6 +7,10 @@ const cartSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    guestCartId: {
+      type: String,
+      required: false,
+    },
     items: [
       {
         product: {

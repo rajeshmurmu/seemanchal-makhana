@@ -1,5 +1,6 @@
 import connectDB from "@/lib/server/mongodb";
-import Product, { ProductType } from "@/models/product.model";
+import { ProductType } from "@/models/product.model";
+import { Product } from "@/models";
 import { NextRequest } from "next/server";
 
 type PopulatedProduct = Omit<ProductType, "category"> & {
@@ -32,7 +33,7 @@ export async function GET(
       ...product,
       category: product?.category?.name || null,
     };
-    console.log({ formattedProduct });
+    // console.log({ formattedProduct });
 
     return Response.json(
       { success: true, product: formattedProduct },

@@ -1,6 +1,6 @@
 "use client"
 import { useParams } from "next/navigation"
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw } from "lucide-react"
+import { Star, ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query"
 import { getProductWithSlug } from "@/lib/client/product-api"
 import { useEffect, useState } from "react"
 import ProductDetailsSkeleton from "@/components/skeletons/product-details-skeleton"
+import CheckoutButton from "@/components/razorpay/checkout-button"
+import RazorpayScript from "@/components/razorpay/razorpay-scripts"
 
 export default function ProductPage() {
     const params = useParams<{ slug: string }>()
@@ -58,6 +60,7 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen">
+            <RazorpayScript />
             <main className="container mx-auto px-4 py-8">
                 <div className="grid lg:grid-cols-2 gap-12 mb-16">
                     {/* Product Image */}
@@ -123,14 +126,10 @@ export default function ProductPage() {
                                 <ShoppingCart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                                 {product?.inStock ? "Add to Cart" : "Out of Stock"}
                             </Button>
-                            <Button variant="outline" size="lg">
-                                <Heart className="mr-2 h-4 w-4" />
-                                Wishlist
-                            </Button>
-                            <Button variant="outline" size="lg">
-                                <Share2 className="mr-2 h-4 w-4" />
-                                Share
-                            </Button>
+                            <CheckoutButton singleItem={{ product: product as ResponseProductType, quantity: 1 }} amount={Number(product?.price) * 100 as number}
+                                buttonText="Buy Now"
+                            />
+
                         </div>
 
                         <Separator />
