@@ -42,7 +42,6 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
     const success = await signup(name, email, password)
 
     if (success) {
-      toast.success("Your account has been created successfully.")
       onSuccess?.()
     } else {
       toast.error("Unable to create account. Please try again.")

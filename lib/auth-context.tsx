@@ -52,8 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (session) {
                     setUser(session.user)
                     localStorage.setItem("user", JSON.stringify(session.user))
-                    if (session.user.role === "admin") {
+                    if (session?.user?.role === "admin") {
                         router.push("/dashboard")
+                        toast.success("You have been successfully logged in.")
+
+                        return true
+                    } else {
+                        router.push(result?.url || "/")
+                        toast.success("You have been successfully logged in.")
+
+                        return true
                     }
                 }
             }
@@ -97,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.error("Login failed: " + result?.error)
                 toast.error("Account created successfully... please login.")
                 router.push("/auth/login")
+                return true
 
             }
 
@@ -105,8 +114,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (session) {
                 setUser(session.user)
                 localStorage.setItem("user", JSON.stringify(session.user))
-                if (session.user.role === "admin") {
+                if (session?.user?.role === "admin") {
                     router.push("/dashboard")
+                    toast.success("You have been successfully logged in.")
+                    return true
+                } else {
+                    router.push(result?.url || "/")
+                    toast.success("You have been successfully logged in.")
+
+                    return true
                 }
             }
 
@@ -123,9 +139,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const logout = async () => {
-        await signOut()
+        const result = await signOut({
+            redirect: false,
+            callbackUrl: "/",
+        })
         setUser(null)
         localStorage.removeItem("user")
+        router.push(result.url || "/")
     }
 
     return <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>{children}</AuthContext.Provider>

@@ -38,7 +38,6 @@ export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
     const success = await login(email, password)
 
     if (success) {
-      toast.success("You have been successfully logged in.")
       onSuccess?.()
     } else {
       toast.error("Invalid email or password. Please try again.")

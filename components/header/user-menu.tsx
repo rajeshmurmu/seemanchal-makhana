@@ -36,8 +36,8 @@ export function UserMenu() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full cursor-pointer">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name as string} />
-                        <AvatarFallback className="bg-primary text-primary-foreground">
+                        <AvatarImage src={user.image || `https://avatar.iran.liara.run/username?username=${user.name ? user.name?.split(" ")[0] : user.email?.charAt(0).toUpperCase()}`} alt={user.name as string} />
+                        <AvatarFallback className="bg-primary text-white font-bold">
                             {user?.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
