@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     setUser(session.user)
                     localStorage.setItem("user", JSON.stringify(session.user))
                     if (session?.user?.role === "admin") {
-                        router.push("/dashboard")
+                        router.push(result?.url || "/dashboard")
                         toast.success("You have been successfully logged in.")
 
                         return true
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(session.user)
                 localStorage.setItem("user", JSON.stringify(session.user))
                 if (session?.user?.role === "admin") {
-                    router.push("/dashboard")
+                    router.push(result?.url || "/dashboard")
                     toast.success("You have been successfully logged in.")
                     return true
                 } else {
