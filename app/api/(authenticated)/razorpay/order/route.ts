@@ -1,21 +1,53 @@
 // app/api/payment/order/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { Order } from "@/models";
+import { Order, Product, User } from "@/models";
 import connectDB from "@/lib/server/mongodb";
 import { razorpayInstance } from "@/lib/server/razorpay";
 import { CartItem } from "@/types/types";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/server/auth";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { amount, currency = "INR", items, clientOrderId } = body;
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "unauthenticated", message: "Unauthorized, Access Denied" },
+        { status: 401 }
+      );
+    }
 
     if (!amount || !items?.length) {
       return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
     }
 
     await connectDB();
+    // find the user in db
+    const user = await User.findById(session?.user?.id);
 
+    if (!user) {
+      return NextResponse.json(
+        { error: "unauthenticated", message: "Unauthorized, Access Denied" },
+        { status: 401 }
+      );
+    }
+
+    // todo validate products, prices, stock, etc.
+    const products = await Product.find({
+      _id: { $in: items.map((i: CartItem) => i.product._id) },
+    });
+
+    if (products.length !== items.length) {
+      return NextResponse.json(
+        { error: "invalid_products", message: "Invalid products" },
+        { status: 400 }
+      );
+    }
+
+    // if invalid, cancel the order immediately
     // Idempotency: if clientOrderId provided, return existing
     if (clientOrderId) {
       const existing = await Order.findOne({ clientOrderId });
@@ -41,12 +73,8 @@ export async function POST(req: NextRequest) {
 
     const rOrder = await razorpayInstance.orders.create(options);
 
-    // todo validate products, prices, stock, etc.
-    // if invalid, cancel the order immediately
-    // await razorpayInstance.orders.cancel(rOrder.id);
-
     // persist order in db
-    await Order.create({
+    const order = await Order.create({
       clientOrderId,
       razorpayOrderId: rOrder.id,
       amount: rOrder.amount,
@@ -58,7 +86,12 @@ export async function POST(req: NextRequest) {
       })),
       status: "created",
       paymentMethod: "razorpay",
+      user: user?._id,
     });
+
+    // link order to user
+    user.orders.push(order._id);
+    await user.save();
 
     return NextResponse.json(
       {

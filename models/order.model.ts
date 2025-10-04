@@ -12,6 +12,11 @@ const OrderItemSchema = new mongoose.Schema({
 
 const OrderSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     clientOrderId: { type: String, index: true }, // optional client-provided id to ensure idempotency
     razorpayOrderId: { type: String, index: true },
     razorpayPaymentId: String,
@@ -31,6 +36,23 @@ const OrderSchema = new mongoose.Schema(
         "cancelled",
       ],
       default: "created",
+    },
+    orderStatus: {
+      type: String,
+      enum: [
+        "confirmed",
+        "preparing",
+        "ready_for_pickup",
+        "delayed",
+        "shipped",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+        "returned",
+        "refund_initiated",
+        "refund_completed",
+      ],
+      default: "confirmed",
     },
   },
   { timestamps: true }

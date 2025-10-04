@@ -79,6 +79,13 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
       theme: {
         color: "#8d1900",
       },
+      modal: {
+        ondismiss: () => {
+          console.log('Razorpay checkout modal dismissed.');
+          // Handle dismissed payment - maybe redirect to cart or retry page
+          toast.error('Payment cancelled or failed to complete.');
+        },
+      }
     };
     const rzp = new (window as any).Razorpay(options);
 
