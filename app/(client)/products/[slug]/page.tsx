@@ -15,7 +15,6 @@ import { getProductWithSlug } from "@/lib/client/product-api"
 import { useEffect, useState } from "react"
 import ProductDetailsSkeleton from "@/components/skeletons/product-details-skeleton"
 import CheckoutButton from "@/components/razorpay/checkout-button"
-import RazorpayScript from "@/components/razorpay/razorpay-scripts"
 
 export default function ProductPage() {
     const params = useParams<{ slug: string }>()
@@ -60,7 +59,6 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen">
-            <RazorpayScript />
             <main className="container mx-auto px-4 py-8">
                 <div className="grid lg:grid-cols-2 gap-12 mb-16">
                     {/* Product Image */}

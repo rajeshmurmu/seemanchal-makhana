@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { ShoppingCart, Plus, Minus, Trash2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,15 +18,15 @@ import Image from "next/image"
 import CheckoutButton from "../razorpay/checkout-button"
 
 export function CartDrawer() {
-  const { items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart()
-  const [isOpen, setIsOpen] = useState(false)
+  const { cartIsOpen, setCartIsOpen, items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart()
+
 
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
 
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={cartIsOpen} onOpenChange={setCartIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative cursor-pointer rounded-full">
           <ShoppingCart className="h-5 w-5" />
@@ -57,7 +56,7 @@ export function CartDrawer() {
                   <h3 className="font-semibold text-lg">Your cart is empty</h3>
                   <p className="text-muted-foreground">Add some products to get started</p>
                 </div>
-                <Button onClick={() => setIsOpen(false)}>Continue Shopping</Button>
+                <Button onClick={() => setCartIsOpen(false)}>Continue Shopping</Button>
               </div>
             </div>
           ) : (

@@ -2,12 +2,14 @@
 "use client"
 
 import { CartItem } from '@/types/types';
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '../ui/button';
 import { createRazorpayOrder, verifyRazorpayPayment } from '@/lib/client/order-api';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/lib/auth-context';
+import { AuthModal } from '../auth/auth-modal';
+import { useCart } from '@/lib/cart-context';
 
 type Props = {
   items?: CartItem[];
@@ -17,12 +19,15 @@ type Props = {
 };
 
 export default function CheckoutButton({ items, singleItem, amount, buttonText = "Checkout" }: Props) {
-  const { user } = useAuth()
   const router = useRouter();
+  const { user } = useAuth()
+  const { clearCart, setCartIsOpen, getTotalItems } = useCart()
   const clientOrderId = "order_" + crypto.randomUUID().slice(0, 28);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 
   // console.log("CheckoutButton", { items, singleItem, clientOrderId, amount });
   const createOrder = async () => {
+    setCartIsOpen(false)
     // initialize razorpay order on server
     const data = await createRazorpayOrder({ amount, items: items ? items : [singleItem] as CartItem[], clientOrderId });
 
@@ -59,6 +64,10 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
         // handle success UI, redirect to order page, etc.
         // window.location.href = `/order-success?orderId=${data.razorpayOrderId}`;
 
+
+        if (getTotalItems() > 1) {
+          clearCart()
+        }
         router.push(`/order-success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&verification_status=${data.message}`);
         toast.success("Payment successful! Order is being processed.");
       },
@@ -74,6 +83,9 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
     const rzp = new (window as any).Razorpay(options);
 
     rzp.on("payment.success", function (resp: any) {
+      if (getTotalItems() > 1) {
+        clearCart()
+      }
       console.log("payment.success", resp);
       router.push(`/order-success?payment_id=${resp.razorpay_payment_id}&order_id=${resp.razorpay_order_id}`);
     });
@@ -85,19 +97,33 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
     rzp.open();
   };
 
+  if (!user?.email || amount <= 0) {
+    return (
+      <>
+        <Button
+          variant={"default"}
+          size={"lg"}
+          onClick={() => setIsAuthModalOpen(true)}
+        >
+          Login To Checkout ₹ {(amount / 100).toFixed(2)}
+        </Button>
+        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
 
+      </>
+    )
+  }
 
 
 
   return (
-    <>
-      <Button
-        variant={"default"}
-        size={"lg"}
-        onClick={createOrder}
-      >
-        {buttonText} ₹ {(amount / 100).toFixed(2)}
-      </Button>
-    </>
+
+    <Button
+      disabled={!user?.email || amount <= 0}
+      variant={"default"}
+      size={"lg"}
+      onClick={createOrder}
+    >
+      {buttonText} ₹ {(amount / 100).toFixed(2)}
+    </Button>
   )
 }

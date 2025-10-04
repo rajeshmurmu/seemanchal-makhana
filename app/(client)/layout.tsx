@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 
-import { CartProvider } from "@/lib/cart-context"
 import { Suspense } from "react"
 import { Header } from "@/components/header/header"
 import FestivalBanner from "@/components/header/festival-banner"
@@ -20,14 +19,12 @@ export default function ClientLayout({
 }>) {
   return (
     <Suspense fallback={null}>
-      <CartProvider>
-        <FestivalBanner />
-        <Header />
-        <main>
-          {children}
-        </main>
-        <Footer />
-      </CartProvider>
+      <FestivalBanner />
+      <Header />
+      <main>
+        {children}
+      </main>
+      <Footer />
     </Suspense>
   )
 }
