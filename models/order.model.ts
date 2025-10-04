@@ -60,3 +60,9 @@ const OrderSchema = new mongoose.Schema(
 
 const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
 export default Order;
+
+export type OrderType = mongoose.InferSchemaType<typeof OrderSchema> & {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+};

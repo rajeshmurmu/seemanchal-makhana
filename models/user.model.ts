@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OrderType } from "./order.model";
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,3 +38,10 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
+
+export type UserType = mongoose.InferSchemaType<typeof userSchema> & {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+  orders: OrderType[];
+};
