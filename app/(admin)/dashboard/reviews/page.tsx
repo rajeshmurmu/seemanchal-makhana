@@ -1,7 +1,8 @@
 import React from 'react'
+import ReviewModeration from './review-moderation'
 
 export default function page() {
     return (
-        <div>page</div>
+        <ReviewModeration />
     )
 }

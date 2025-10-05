@@ -2,12 +2,14 @@ import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema(
   {
-    productId: {
-      type: String,
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
       required: true,
     },
-    userName: {
-      type: String,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     rating: {
@@ -18,13 +20,10 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
-    verified: {
-      type: Boolean,
-      required: true,
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "flagged"],
+      default: "pending",
     },
   },
   { timestamps: true }
@@ -34,11 +33,12 @@ const Review = mongoose.models.Review || mongoose.model("Review", reviewSchema);
 
 export default Review;
 
-export type Review = mongoose.Document & {
-  productId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: Date;
-  verified: boolean;
+export type ReviewType = mongoose.InferSchemaType<typeof reviewSchema> & {
+  _id: string;
+  product: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+  } | null;
 };

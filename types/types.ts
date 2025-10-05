@@ -1,5 +1,6 @@
 import z from "zod";
 import { productSchema } from "@/shared/schema/product-schema";
+import { ReviewType } from "@/models/review.model";
 
 export type ProductFormData = z.infer<typeof productSchema>;
 
@@ -20,6 +21,7 @@ export interface ProductWithAdditionalFields extends ProductFormData {
 
 export type ResponseProductType = ProductWithAdditionalFields & {
   images: string[];
+  reviews?: ReviewType[];
 };
 
 export interface CartItem {

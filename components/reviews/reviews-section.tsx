@@ -1,39 +1,34 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Star, Filter } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ReviewCard } from "./review-card"
 import { ReviewForm } from "./review-form"
-import { reviews } from "@/lib/data"
+import { ReviewType } from "@/models/review.model"
+import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
 
 interface ReviewsSectionProps {
   productId: string
   averageRating: number
   totalReviews: number
+  reviews: ReviewType[]
 }
 
-export function ReviewsSection({ productId, averageRating, totalReviews }: ReviewsSectionProps) {
+export function ReviewsSection({ productId, averageRating, totalReviews, reviews }: ReviewsSectionProps) {
   const [sortBy, setSortBy] = useState("newest")
   const [filterRating, setFilterRating] = useState("all")
+  const [filteredReviews, setFilteredReviews] = useState<ReviewType[]>(reviews)
+  const [ratingDistribution, setRatingDistribution] = useState<{ rating: number; count: number; percentage: number }[]>([])
 
-  // Filter reviews for this product
-  const productReviews = reviews.filter((review) => review.productId === productId)
-
-  // Apply filters and sorting
-  let filteredReviews = [...productReviews]
-
-  if (filterRating !== "all") {
-    filteredReviews = filteredReviews.filter((review) => review.rating === Number.parseInt(filterRating))
-  }
 
   // Sort reviews
-  filteredReviews.sort((a, b) => {
+  filteredReviews?.sort((a, b) => {
     switch (sortBy) {
       case "newest":
-        return new Date(b.date).getTime() - new Date(a.date).getTime()
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       case "oldest":
-        return new Date(a.date).getTime() - new Date(b.date).getTime()
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       case "highest":
         return b.rating - a.rating
       case "lowest":
@@ -43,15 +38,21 @@ export function ReviewsSection({ productId, averageRating, totalReviews }: Revie
     }
   })
 
+  useEffect(() => {
+    setFilteredReviews(
+      reviews?.filter((review) => review.product._id === productId && (filterRating === "all" ? true : review.rating === Number.parseInt(filterRating)))
+    )
+  }, [filterRating, reviews, productId])
+
   // Calculate rating distribution
-  const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
-    rating,
-    count: productReviews.filter((review) => review.rating === rating).length,
-    percentage:
-      productReviews.length > 0
-        ? (productReviews.filter((review) => review.rating === rating).length / productReviews.length) * 100
-        : 0,
-  }))
+  useEffect(() => {
+    const distribution = [5, 4, 3, 2, 1].map((rating) => {
+      const count = reviews?.filter((review) => review.rating === rating && review.product._id === productId).length || 0
+      const percentage = totalReviews ? (count / totalReviews) * 100 : 0
+      return { rating, count, percentage }
+    })
+    setRatingDistribution(distribution)
+  }, [reviews, totalReviews, productId])
 
   return (
     <section className="space-y-8">
@@ -63,14 +64,7 @@ export function ReviewsSection({ productId, averageRating, totalReviews }: Revie
             <div className="text-center">
               <div className="text-4xl font-bold text-primary">{averageRating}</div>
               <div className="flex items-center justify-center space-x-1 mt-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.floor(averageRating) ? "text-secondary fill-current" : "text-muted-foreground"
-                    }`}
-                  />
-                ))}
+                <StarRating rating={averageRating} />
               </div>
               <div className="text-sm text-muted-foreground mt-1">Based on {totalReviews} reviews</div>
             </div>
@@ -87,7 +81,7 @@ export function ReviewsSection({ productId, averageRating, totalReviews }: Revie
                 <Star className="h-3 w-3 text-secondary fill-current" />
               </div>
               <div className="flex-1 bg-muted rounded-full h-2">
-                <div className="bg-secondary h-2 rounded-full transition-all" style={{ width: `${percentage}%` }} />
+                <div className="bg-secondary h-2 rounded-full transition-all" style={{ width: `${percentage as number}%` }} />
               </div>
               <span className="text-sm text-muted-foreground w-8">{count}</span>
             </div>
@@ -99,10 +93,10 @@ export function ReviewsSection({ productId, averageRating, totalReviews }: Revie
       <ReviewForm productId={productId} />
 
       {/* Filters and Sorting */}
-      {productReviews.length > 0 && (
+      {reviews?.length > 0 && (
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <h3 className="font-semibold text-lg">
-            {filteredReviews.length} {filteredReviews.length === 1 ? "Review" : "Reviews"}
+            {filteredReviews?.length} {filteredReviews?.length === 1 ? "Review" : "Reviews"}
           </h3>
 
           <div className="flex gap-3">
@@ -138,12 +132,12 @@ export function ReviewsSection({ productId, averageRating, totalReviews }: Revie
 
       {/* Reviews List */}
       <div className="space-y-4">
-        {filteredReviews.length > 0 ? (
-          filteredReviews.map((review) => <ReviewCard key={review.id} review={review} />)
+        {filteredReviews?.length > 0 ? (
+          filteredReviews?.map((review) => <ReviewCard key={review._id} review={review} />)
         ) : (
           <div className="text-center py-12">
             <div className="text-muted-foreground">
-              {productReviews.length === 0
+              {reviews?.length === 0
                 ? "No reviews yet. Be the first to review this product!"
                 : "No reviews match your current filters."}
             </div>

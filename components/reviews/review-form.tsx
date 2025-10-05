@@ -1,27 +1,35 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
-import { Star, Send } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Star, Send, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
 import { AuthModal } from "../auth/auth-modal"
 import toast from "react-hot-toast"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { postReview } from "@/lib/client/review-api"
 
 interface ReviewFormProps {
   productId: string
   onReviewSubmitted?: () => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
+export function ReviewForm({ productId }: ReviewFormProps) {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [comment, setComment] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  const { mutate, data, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: postReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', productId] })
+    }
+  })
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,19 +50,26 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
       return
     }
 
-    setIsSubmitting(true)
-
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    mutate({ productId, rating, comment })
 
-    toast.success("Thank you for your feedback. Your review will be published shortly.")
 
-    // Reset form
-    setRating(0)
-    setComment("")
-    setIsSubmitting(false)
-    onReviewSubmitted?.()
   }
+
+  useEffect(() => {
+
+    if (isError && error) {
+      toast.error(error.message || "Error while posting your review")
+    }
+
+    if (isSuccess || data) {
+      toast.success(data?.message || "Review posted successfully.")
+      setRating(0)
+      setComment("")
+    }
+
+  }, [data, error, isError, isSuccess])
+
 
   if (!user) {
     return (
@@ -114,9 +129,14 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? (
-              "Submitting..."
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? (
+              <>
+                <Loader2 className="animate-spin mr-2" />
+                <span>
+                  Submitting...
+                </span>
+              </>
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />

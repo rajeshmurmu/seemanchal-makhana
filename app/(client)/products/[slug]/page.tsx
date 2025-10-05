@@ -1,6 +1,6 @@
 "use client"
 import { useParams } from "next/navigation"
-import { Star, ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react"
+import { ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -15,6 +15,8 @@ import { getProductWithSlug } from "@/lib/client/product-api"
 import { useEffect, useState } from "react"
 import ProductDetailsSkeleton from "@/components/skeletons/product-details-skeleton"
 import CheckoutButton from "@/components/razorpay/checkout-button"
+import { ReviewType } from "@/models/review.model"
+import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
 
 export default function ProductPage() {
     const params = useParams<{ slug: string }>()
@@ -25,6 +27,7 @@ export default function ProductPage() {
         queryFn: () => getProductWithSlug({ slug: params.slug })
     })
     const [product, setProduct] = useState<ResponseProductType | null>(null)
+    const [averageRating, setAverageRating] = useState(0)
 
     useEffect(() => {
         if (data) {
@@ -51,12 +54,20 @@ export default function ProductPage() {
         : 0
 
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        // Calculate average rating
+        const avgRating = product?.reviews && product?.reviews?.reduce((acc, review) => acc + review.rating, 0) / (product?.reviews?.length || 1)
+
+        setAverageRating(avgRating || 0)
+    }, [params.slug, product?.reviews]);
+
+
     if (isLoading) {
         return (
             <ProductDetailsSkeleton />
         )
     }
-
     return (
         <div className="min-h-screen">
             <main className="container mx-auto px-4 py-8">
@@ -92,16 +103,10 @@ export default function ProductPage() {
 
                             <div className="flex items-center space-x-2">
                                 <div className="flex items-center">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className={`h-5 w-5 ${i < Math.floor(product?.rating as number) ? "text-secondary fill-current" : "text-muted-foreground"
-                                                }`}
-                                        />
-                                    ))}
+                                    <StarRating rating={averageRating} />
                                 </div>
                                 <span className="text-sm text-muted-foreground">
-                                    {product?.rating} ({product?.reviewCount} reviews)
+                                    ({product?.reviews?.length} reviews)
                                 </span>
                             </div>
                         </div>
@@ -160,7 +165,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* Reviews Section */}
-                <ReviewsSection productId={product?._id as string} averageRating={product?.rating as number} totalReviews={product?.reviewCount as number} />
+                <ReviewsSection reviews={product?.reviews as ReviewType[]} productId={product?._id as string} averageRating={averageRating} totalReviews={product?.reviews?.length as number} />
             </main>
         </div>
     )

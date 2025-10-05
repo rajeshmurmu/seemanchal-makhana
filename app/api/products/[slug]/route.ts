@@ -1,6 +1,6 @@
 import connectDB from "@/lib/server/mongodb";
 import { ProductType } from "@/models/product.model";
-import { Product } from "@/models";
+import { Product, Review } from "@/models";
 import { NextRequest } from "next/server";
 
 type PopulatedProduct = Omit<ProductType, "category"> & {
@@ -29,9 +29,18 @@ export async function GET(
       );
     }
 
+    const reviews = await Review.find({
+      product: product._id,
+      status: "approved",
+    })
+      .populate("user", "name email")
+      .populate("product", "name slug")
+      .lean();
+
     const formattedProduct = {
       ...product,
       category: product?.category?.name || null,
+      reviews: reviews || [],
     };
     // console.log({ formattedProduct });
 
