@@ -61,7 +61,7 @@ export default function UserDataTable<T extends Record<string, any>>({ users, co
             </TableHeader>
             <TableBody>
                 {
-                    users.map((user) => (
+                    users?.map((user) => (
                         <TableRow key={user._id}>
                             <TableCell>
                                 {user._id}

@@ -69,3 +69,18 @@ export const verifyRazorpayPayment = async ({
     throw new Error(JSON.stringify(error) || "Something went wrong");
   }
 };
+
+export const fetchAllOrders = async () => {
+  try {
+    const response = await apiClient.get("/api/admin/orders");
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch orders");
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(JSON.stringify(error) || "Something went wrong");
+  }
+};

@@ -59,6 +59,11 @@ const productSchema = new mongoose.Schema(
 const Product =
   mongoose.models.Product || mongoose.model("Product", productSchema);
 
-export type ProductType = mongoose.InferSchemaType<typeof productSchema>;
+export type ProductType = mongoose.InferSchemaType<typeof productSchema> & {
+  _id: string;
+  qty: number; // for order items
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default Product;
