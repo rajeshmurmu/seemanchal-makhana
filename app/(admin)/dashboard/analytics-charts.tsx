@@ -1,5 +1,6 @@
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar } from 'recharts';
 
 export default function AnalyticsCharts() {
     //todo: remove mock functionality
@@ -20,15 +21,10 @@ export default function AnalyticsCharts() {
         { name: 'Power Bank', sales: 420, color: 'hsl(var(--chart-5))' },
     ];
 
-    const categoryData = [
-        { name: 'Electronics', value: 45, color: 'hsl(var(--chart-1))' },
-        { name: 'Accessories', value: 25, color: 'hsl(var(--chart-2))' },
-        { name: 'Clothing', value: 20, color: 'hsl(var(--chart-3))' },
-        { name: 'Other', value: 10, color: 'hsl(var(--chart-4))' },
-    ];
+
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-col gap-4">
             <Card className="lg:col-span-2" data-testid="card-sales-trend">
                 <CardHeader>
                     <CardTitle>Sales Trend</CardTitle>
@@ -37,7 +33,7 @@ export default function AnalyticsCharts() {
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={salesData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                                <CartesianGrid strokeDasharray="3 3" stroke="green" />
                                 <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
                                 <YAxis stroke="hsl(var(--muted-foreground))" />
                                 <Line
@@ -48,33 +44,6 @@ export default function AnalyticsCharts() {
                                     dot={{ fill: "hsl(var(--primary))" }}
                                 />
                             </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card data-testid="card-category-distribution">
-                <CardHeader>
-                    <CardTitle>Category Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={categoryData}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={100}
-                                    fill="#8884d8"
-                                    dataKey="value"
-                                    label={({ name, percent }) => `${name} ${(percent as number * 100).toFixed(0)}%`}
-                                >
-                                    {categoryData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                            </PieChart>
                         </ResponsiveContainer>
                     </div>
                 </CardContent>
