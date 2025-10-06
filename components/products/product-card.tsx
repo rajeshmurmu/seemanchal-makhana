@@ -9,11 +9,14 @@ import { useCart } from "@/lib/cart-context"
 import toast from "react-hot-toast"
 import Image from "next/image"
 import { ResponseProductType } from "@/types/types"
+import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
+import { ReviewType } from "@/models/review.model"
 
 
 
 interface ProductCardProps {
-    product: ResponseProductType
+    product: ResponseProductType,
+    reviews?: ReviewType[]
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -29,7 +32,6 @@ export function ProductCard({ product }: ProductCardProps) {
         addToCart(product)
         toast.success(`${product.name} has been added to your cart.`)
     }
-
     return (
         <Card className="group w-[45%] lg:w-xs gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
             <div className="relative overflow-hidden">
@@ -68,13 +70,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
                     <div className="flex items-center space-x-1">
                         <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
+                            {/* {[...Array(5)].map((_, i) => (
                                 <Star
                                     key={i}
                                     className={`h-4 w-4 ${i < Math.floor(product.rating) ? "text-secondary fill-current" : "text-muted-foreground"
                                         }`}
                                 />
-                            ))}
+                            ))} */}
+
+                            <StarRating rating={(product.reviews && product.reviews?.reduce((acc, review) => acc + review.rating, 0) / product.reviews?.length) || 0} />
                         </div>
                         <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
                     </div>
