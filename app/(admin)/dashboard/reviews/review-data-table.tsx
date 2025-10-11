@@ -2,14 +2,12 @@
 
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Star, } from 'lucide-react';
 import { ReviewType } from '@/models/review.model';
 import ReviewAction from './review-action';
 import { Badge } from '@/components/ui/badge';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateReviewStatus } from '@/lib/client/review-api';
-import toast from 'react-hot-toast';
+
 
 
 export function StarRating({ rating }: { rating: number }) {
@@ -48,21 +46,6 @@ interface ReviewDataTableProps<T> {
 
 export default function ReviewDataTable<T extends Record<string, any>>({ reviews, columns }: ReviewDataTableProps<T>) {
 
-    const queryClient = useQueryClient();
-    const { mutate, data, isPending, isSuccess, isError, error } = useMutation({
-        mutationFn: updateReviewStatus,
-        onSuccess: () => {
-            // Invalidate and refetch
-            queryClient.invalidateQueries({ queryKey: ['reviews'] })
-        }
-    })
-
-    const updateReiviewStatus = (id: string, status: string) => {
-        console.log(`Updating review ${id} to status: ${status}`);
-        mutate({ reviewId: id, status });
-
-    };
-
     const statusColors = {
         pending: "secondary",
         approved: "default",
@@ -70,15 +53,6 @@ export default function ReviewDataTable<T extends Record<string, any>>({ reviews
         flagged: "destructive",
     } as const;
 
-    useEffect(() => {
-        if (data && isSuccess) {
-            toast.success(data?.message || 'Review status updated successfully');
-        }
-
-        if (isError && error) {
-            toast.error(error?.message || 'Failed to update review status');
-        }
-    }, [data, error, isError, isSuccess]);
 
     return (
         <Table className='mt-4 w-full'>
@@ -119,8 +93,7 @@ export default function ReviewDataTable<T extends Record<string, any>>({ reviews
                             </TableCell>
 
                             <TableCell>
-                                <ReviewAction updating={isPending} value={review._id} review={review as ReviewType}
-                                    updateReviewStatus={updateReiviewStatus}
+                                <ReviewAction review={review as ReviewType}
                                 />
                             </TableCell>
                         </TableRow>

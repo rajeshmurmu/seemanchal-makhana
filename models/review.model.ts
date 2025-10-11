@@ -25,6 +25,10 @@ const reviewSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected", "flagged"],
       default: "pending",
     },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

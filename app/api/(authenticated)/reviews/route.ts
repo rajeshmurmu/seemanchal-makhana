@@ -46,3 +46,35 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    // get search params
+    const { searchParams } = new URL(req.nextUrl);
+    const featured = searchParams.get("featured");
+    await connectDB();
+    const reviews = await Review.find({
+      ...(featured && { featured: featured === "true" }),
+    })
+      .populate("user", "name email")
+      .populate("product", "name slug");
+
+    if (!reviews) {
+      return NextResponse.json(
+        { success: false, message: "No reviews found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, reviews, message: "Reviews fetched successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

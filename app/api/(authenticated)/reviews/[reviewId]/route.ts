@@ -8,7 +8,7 @@ export async function PUT(
 ) {
   try {
     const { reviewId } = await params;
-    const { status } = await request.json();
+    const { status, featured } = await request.json();
 
     await connectDB();
     const review = await Review.findById(reviewId);
@@ -20,7 +20,9 @@ export async function PUT(
       );
     }
 
-    review.status = status;
+    if (status) review.status = status;
+
+    if (featured) review.featured = featured;
     await review.save();
 
     return NextResponse.json(

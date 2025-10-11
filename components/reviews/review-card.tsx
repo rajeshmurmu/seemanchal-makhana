@@ -11,7 +11,7 @@ interface ReviewCardProps {
 export function ReviewCard({ review }: ReviewCardProps) {
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardContent className="p-6">
         <div className="flex items-start space-x-4">
           <Avatar className="h-10 w-10">
@@ -26,10 +26,12 @@ export function ReviewCard({ review }: ReviewCardProps) {
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold">{review.user?.name}</h4>
                 {review.status === "approved" && (
-                  <Badge variant="secondary" className="text-xs">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Verified Purchase
-                  </Badge>
+                  <div className="hidden md:block">
+                    <Badge variant="secondary" className="text-xs">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Verified Purchase
+                    </Badge>
+                  </div>
                 )}
               </div>
               <span className="text-sm text-muted-foreground">{new Date(review.createdAt).toDateString()}</span>
