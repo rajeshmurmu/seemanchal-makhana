@@ -61,7 +61,7 @@ export function UserMenu() {
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Account Settings</span>
+                    <Link href={"/account-settings"}>Account Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {

@@ -38,8 +38,8 @@ export function CartDrawer() {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="w-full p-4 sm:max-w-lg">
-        <SheetHeader>
+      <SheetContent className="w-full flex flex-col p-0 sm:max-w-lg">
+        <SheetHeader className="px-4 py-2">
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
             Shopping Cart ({totalItems} items)
@@ -47,7 +47,7 @@ export function CartDrawer() {
           <SheetDescription>Review your items before checkout</SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col flex-1 h-full">
           {items.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center space-y-4">
@@ -61,7 +61,7 @@ export function CartDrawer() {
             </div>
           ) : (
             <>
-              <div className="flex-1 overflow-auto py-4">
+              <div className="flex-1 overflow-y-auto px-4 py-2 pb-72">
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div key={item.product._id} className="flex items-center space-x-4 p-4 border rounded-lg">
@@ -114,7 +114,7 @@ export function CartDrawer() {
                 </div>
               </div>
 
-              <div className="border-t pt-4 space-y-4">
+              <div className="absolute bottom-0 left-0 right-0 border-t bg-background px-4 py-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <Button variant="outline" size="sm" onClick={clearCart}>
                     <Trash2 className="h-4 w-4 mr-2" />

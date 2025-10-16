@@ -4,5 +4,6 @@ import Cart from "./cart.model";
 import User from "./user.model";
 import Order from "./order.model";
 import Review from "./review.model";
+import Address from "./address.model";
 
-export { Category, Product, Cart, User, Order, Review };
+export { Category, Product, Cart, User, Order, Review, Address };

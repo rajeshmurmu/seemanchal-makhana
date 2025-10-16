@@ -14,11 +14,8 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: "/diverse-user-avatars.png" },
     address: [
       {
-        street: { type: String },
-        city: { type: String },
-        state: { type: String },
-        country: { type: String },
-        postalCode: { type: String },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
       },
     ],
     cart: {

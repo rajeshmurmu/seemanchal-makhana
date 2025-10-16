@@ -12,6 +12,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>
     signup: (name: string, email: string, password: string) => Promise<boolean>
     logout: () => void
+    updateProfile: (updates: Partial<SessionUser>) => Promise<boolean>
     isLoading: boolean
 }
 
@@ -148,7 +149,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push(result.url || "/")
     }
 
-    return <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>{children}</AuthContext.Provider>
+    const updateProfile = async (updates: Partial<SessionUser>) => {
+
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({ status: 200 })
+            })
+        })
+        return true
+    }
+
+    return <AuthContext.Provider value={{ user, login, signup, logout, isLoading, updateProfile }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

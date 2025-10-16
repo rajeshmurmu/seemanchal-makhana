@@ -46,3 +46,18 @@ export interface SessionUser {
   email?: string | null | undefined;
   image?: string | null | undefined;
 }
+
+export interface Address {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault?: boolean;
+}
+
+export type AddressInput = Omit<Address, "id">;
