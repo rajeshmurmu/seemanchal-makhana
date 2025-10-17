@@ -54,6 +54,11 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: "confirmed",
     },
+    deliveryAddress: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+      required: true,
+    },
   },
   { timestamps: true }
 );

@@ -16,10 +16,11 @@ type Props = {
   singleItem?: CartItem;
   amount: number; // paise
   buttonText?: string;
-  disabled?: boolean
+  disabled?: boolean,
+  deliveryAddress: string
 };
 
-export default function CheckoutButton({ items, singleItem, amount, buttonText = "Checkout", disabled }: Props) {
+export default function CheckoutButton({ items, singleItem, amount, buttonText = "Checkout", disabled, deliveryAddress }: Props) {
   const router = useRouter();
   const { user } = useAuth()
   const { clearCart, setCartIsOpen, getTotalItems } = useCart()
@@ -30,7 +31,7 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
   const createOrder = async () => {
     setCartIsOpen(false)
     // initialize razorpay order on server
-    const data = await createRazorpayOrder({ amount, items: items ? items : [singleItem] as CartItem[], clientOrderId });
+    const data = await createRazorpayOrder({ amount, items: items ? items : [singleItem] as CartItem[], clientOrderId, deliveryAddress });
 
     // inject razorpay script if not present
     if (!(window).Razorpay) {

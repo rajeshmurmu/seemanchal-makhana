@@ -8,7 +8,13 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { amount, currency = "INR", items, clientOrderId } = body;
+    const {
+      amount,
+      currency = "INR",
+      items,
+      clientOrderId,
+      deliveryAddress,
+    } = body;
 
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -30,6 +36,7 @@ export async function POST(req: NextRequest) {
       amount: amount,
       currency: currency,
       clientOrderId: clientOrderId,
+      deliveryAddress,
     });
 
     await order.save();

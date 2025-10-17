@@ -1,4 +1,3 @@
-// app/api/payment/order/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Order, Product, User } from "@/models";
 import connectDB from "@/lib/server/mongodb";
@@ -10,7 +9,13 @@ import { authOptions } from "@/lib/server/auth";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { amount, currency = "INR", items, clientOrderId } = body;
+    const {
+      amount,
+      currency = "INR",
+      items,
+      clientOrderId,
+      deliveryAddress,
+    } = body;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -87,6 +92,7 @@ export async function POST(req: NextRequest) {
       status: "created",
       paymentMethod: "razorpay",
       user: user?._id,
+      deliveryAddress: deliveryAddress,
     });
 
     // link order to user

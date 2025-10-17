@@ -8,10 +8,12 @@ export const createRazorpayOrder = async ({
   receipt,
   clientOrderId,
   items,
+  deliveryAddress,
 }: {
   amount: number; // in paise
   items: CartItem[];
   clientOrderId: string;
+  deliveryAddress: string;
   currency?: string;
   receipt?: string;
 }) => {
@@ -22,6 +24,7 @@ export const createRazorpayOrder = async ({
       receipt,
       items,
       clientOrderId,
+      deliveryAddress,
     });
 
     if (response.status !== 200 || !response.data.razorpayOrderId) {
@@ -91,10 +94,12 @@ export const createCODOrder = async ({
   clientOrderId,
   currency = "INR",
   receipt,
+  deliveryAddress,
 }: {
   amount: number; // in paise
   items: CartItem[];
   clientOrderId: string;
+  deliveryAddress: string;
   currency?: string;
   receipt?: string;
 }) => {
@@ -105,6 +110,7 @@ export const createCODOrder = async ({
       clientOrderId,
       currency,
       receipt,
+      deliveryAddress,
     });
     return response.data;
   } catch (error) {

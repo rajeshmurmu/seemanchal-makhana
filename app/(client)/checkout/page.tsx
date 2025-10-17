@@ -102,6 +102,7 @@ export default function CheckoutPage() {
       items: products,
       amount: total,
       clientOrderId,
+      deliveryAddress: selectedAddressId
     })
   }
 
@@ -159,7 +160,7 @@ export default function CheckoutPage() {
                     Place Order
                   </Button>
                 ) : (
-                  <CheckoutButton items={products} buttonText="Proceed to Checkout" amount={Number(total) * 100} />
+                  <CheckoutButton items={products} buttonText="Proceed to Checkout" amount={Number(total) * 100} deliveryAddress={selectedAddressId!} />
                 )
               }
             </CardContent>
