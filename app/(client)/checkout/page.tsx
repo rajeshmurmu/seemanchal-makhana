@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -13,20 +13,21 @@ import { OrderSummary } from "@/components/checkout/order-summary"
 import { useAddressData } from "@/hooks/use-address-data"
 import { AddressType } from "@/models/address.model"
 import toast from "react-hot-toast"
+import CheckoutButton from "@/components/razorpay/checkout-button"
+import { CartItem } from "@/types/types"
+import { useQuery } from "@tanstack/react-query"
+import { getProductWithSlug } from "@/lib/client/product-api"
+import LoadingState from "@/app/(admin)/components/loading-state"
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { items, clearCart } = useCart()
+  const searchParams = useSearchParams()
+  const { items, clearCart, getTotalPrice } = useCart()
   const { addressData } = useAddressData()
   const [addresses, setAddresses] = useState<AddressType[]>([])
+  const [products, setProducts] = useState<CartItem[]>([])
 
 
-
-  useEffect(() => {
-    if (addressData) {
-      setAddresses(addressData as AddressType[])
-    }
-  }, [addressData])
 
   // selected address id (default to default address if available)
   const defaultAddressId = useMemo(
@@ -35,6 +36,35 @@ export default function CheckoutPage() {
   )
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(defaultAddressId)
   const [payment, setPayment] = useState<"cod" | "upi" | "card">("cod")
+
+  const product = searchParams.get('product')
+  const quantity = searchParams.get('quantity')
+  const productId = searchParams.get('productId')
+
+  // get params product
+  const { data, isLoading } = useQuery({
+    queryKey: ['product', product],
+    queryFn: () => getProductWithSlug({ slug: product as string })
+  })
+
+
+  useEffect(() => {
+    if (addressData) {
+      setAddresses(addressData as AddressType[])
+    }
+  }, [addressData])
+
+  useEffect(() => {
+    if (data?.product) {
+      // fetch product details and add to products array
+      setProducts([{ product: data?.product, quantity: Number(quantity) }])
+    } else {
+      setProducts(items)
+    }
+  }, [data, items, product, productId, quantity])
+
+
+
 
   useEffect(() => {
     // keep selected id consistent with any address changes
@@ -63,11 +93,18 @@ export default function CheckoutPage() {
     router.push("/")
   }
 
-  useEffect(() => {
-    if (!items.length) {
-      router.push("/")
-    }
-  }, [items, router])
+  const totalPrice = productId ? Number(quantity) * data?.product?.price : getTotalPrice();
+  const subtotal = totalPrice
+  const shipping = subtotal > 999 ? 0 : 49
+  const total = subtotal + shipping
+
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-screen">
+      <LoadingState message="Please wait..." />
+
+    </div>
+  )
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -109,15 +146,22 @@ export default function CheckoutPage() {
               </RadioGroup>
 
               <Separator />
-              <Button className="w-full" onClick={handlePlaceOrder}>
-                Place Order
-              </Button>
+
+              {
+                payment === "cod" ? (
+                  <Button className="w-full" onClick={handlePlaceOrder}>
+                    Place Order
+                  </Button>
+                ) : (
+                  <CheckoutButton items={products} buttonText="Proceed to Checkout" amount={Number(total) * 100} />
+                )
+              }
             </CardContent>
           </Card>
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-          <OrderSummary />
+          <OrderSummary items={products} total={total} shipping={shipping} subtotal={subtotal} />
         </div>
       </div>
     </main>

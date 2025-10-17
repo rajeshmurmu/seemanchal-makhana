@@ -16,9 +16,10 @@ type Props = {
   singleItem?: CartItem;
   amount: number; // paise
   buttonText?: string;
+  disabled?: boolean
 };
 
-export default function CheckoutButton({ items, singleItem, amount, buttonText = "Checkout" }: Props) {
+export default function CheckoutButton({ items, singleItem, amount, buttonText = "Checkout", disabled }: Props) {
   const router = useRouter();
   const { user } = useAuth()
   const { clearCart, setCartIsOpen, getTotalItems } = useCart()
@@ -125,10 +126,11 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
   return (
 
     <Button
-      disabled={!user?.email || amount <= 0}
+      disabled={!user?.email || (amount <= 0) || disabled}
       variant={"default"}
       size={"lg"}
       onClick={createOrder}
+      className='w-full'
     >
       {buttonText} ₹ {(amount / 100).toFixed(2)}
     </Button>

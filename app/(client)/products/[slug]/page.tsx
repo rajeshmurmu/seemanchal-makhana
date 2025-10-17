@@ -1,5 +1,5 @@
 "use client"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { ShoppingCart, Truck, Shield, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,13 +14,13 @@ import { useQuery } from "@tanstack/react-query"
 import { getProductWithSlug } from "@/lib/client/product-api"
 import { useEffect, useState } from "react"
 import ProductDetailsSkeleton from "@/components/skeletons/product-details-skeleton"
-import CheckoutButton from "@/components/razorpay/checkout-button"
 import { ReviewType } from "@/models/review.model"
 import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
 
 export default function ProductPage() {
     const params = useParams<{ slug: string }>()
     const { addToCart } = useCart()
+    const router = useRouter()
 
     const { data, isLoading, error, isError, refetch } = useQuery({
         queryKey: ['product', params.slug],
@@ -47,6 +47,12 @@ export default function ProductPage() {
 
         addToCart(product)
         toast.success(`${product.name} has been added to your cart.`)
+    }
+
+    const handleBuyNow = () => {
+        if (!product?.inStock) return
+        router.push(`/checkout?product=${params.slug}&quantity=1&productId=${product._id}`)
+
     }
 
     const discountPercentage = product?.originalPrice
@@ -129,10 +135,11 @@ export default function ProductPage() {
                                 <ShoppingCart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                                 {product?.inStock ? "Add to Cart" : "Out of Stock"}
                             </Button>
-                            <CheckoutButton singleItem={{ product: product as ResponseProductType, quantity: 1 }} amount={Number(product?.price) * 100 as number}
+                            {/* <CheckoutButton disabled={!product?.inStock} singleItem={{ product: product as ResponseProductType, quantity: 1 }} amount={Number(product?.price) * 100 as number}
                                 buttonText="Buy Now"
-                            />
+                            /> */}
 
+                            <Button onClick={handleBuyNow} size="lg" className="flex-1 py-2 group" disabled={!product?.inStock}>Buy Now</Button>
                         </div>
 
                         <Separator />
@@ -143,7 +150,7 @@ export default function ProductPage() {
                                 <Truck className="h-5 w-5 text-primary" />
                                 <div>
                                     <div className="font-medium text-sm">Free Delivery</div>
-                                    <div className="text-xs text-muted-foreground">On orders above ₹500</div>
+                                    <div className="text-xs text-muted-foreground">On orders above ₹999</div>
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3 p-4 bg-muted/50 rounded-lg">

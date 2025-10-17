@@ -3,13 +3,11 @@
 import Image from "next/image"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useCart } from "@/lib/cart-context"
+import { CartItem } from "@/types/types"
 
-export function OrderSummary() {
-    const { items, getTotalPrice } = useCart()
-    const subtotal = getTotalPrice()
-    const shipping = subtotal > 999 ? 0 : 49
-    const total = subtotal + shipping
+
+
+export function OrderSummary({ total, items, shipping, subtotal }: { total: number, items: CartItem[], shipping: number, subtotal: number }) {
 
     return (
         <Card>
@@ -21,7 +19,7 @@ export function OrderSummary() {
                     {items.map(({ product, quantity }) => (
                         <div key={product._id} className="flex items-center gap-3">
                             <Image
-                                src={product.images[0] || "/placeholder.svg?height=64&width=64&query=product image"}
+                                src={product?.images[0] || "/placeholder.svg?height=64&width=64&query=product image"}
                                 alt={product.name}
                                 width={64}
                                 height={64}

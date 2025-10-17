@@ -15,7 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { useCart } from "@/lib/cart-context"
 import Image from "next/image"
-import CheckoutButton from "../razorpay/checkout-button"
+import Link from "next/link"
 
 export function CartDrawer() {
   const { cartIsOpen, setCartIsOpen, items, updateQuantity, removeFromCart, getTotalItems, getTotalPrice, clearCart } = useCart()
@@ -129,7 +129,11 @@ export function CartDrawer() {
                 <Separator />
 
                 <SheetFooter>
-                  <CheckoutButton items={items} buttonText="Proceed to Checkout" amount={Number(totalPrice) * 100} />
+                  <Link href="/checkout" className="w-full" >
+                    <Button onClick={() => setCartIsOpen(false)} className="w-full">
+                      Checkout Now
+                    </Button>
+                  </Link>
                 </SheetFooter>
               </div>
             </>
