@@ -46,5 +46,5 @@ const Address =
 export default Address;
 
 export type AddressType = mongoose.InferSchemaType<typeof addressSchema> & {
-  _id: mongoose.Types.ObjectId | string;
+  _id?: mongoose.Types.ObjectId | string;
 };

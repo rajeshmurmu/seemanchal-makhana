@@ -48,7 +48,7 @@ export interface SessionUser {
 }
 
 export interface Address {
-  id: string;
+  id?: string;
   fullName: string;
   phoneNumber: string;
   line1: string;
