@@ -18,11 +18,13 @@ import { CartItem } from "@/types/types"
 import { useQuery } from "@tanstack/react-query"
 import { getProductWithSlug } from "@/lib/client/product-api"
 import LoadingState from "@/app/(admin)/components/loading-state"
+import { useOrderMutation } from "@/hooks/use-order-mutation"
 
 export default function CheckoutPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { items, clearCart, getTotalPrice } = useCart()
+  const { codOrderMutation } = useOrderMutation()
+  const { items, getTotalPrice } = useCart()
   const { addressData } = useAddressData()
   const [addresses, setAddresses] = useState<AddressType[]>([])
   const [products, setProducts] = useState<CartItem[]>([])
@@ -77,10 +79,18 @@ export default function CheckoutPage() {
     }
   }, [addresses, selectedAddressId, defaultAddressId])
 
+
+
+  const totalPrice = productId ? Number(quantity) * data?.product?.price : getTotalPrice();
+  const subtotal = totalPrice
+  const shipping = subtotal > 999 ? 0 : 49
+  const total = subtotal + shipping
+  const clientOrderId = "order_" + crypto.randomUUID().slice(0, 28);
+
   const handlePlaceOrder = () => {
-    if (!items.length) {
+    if (!products.length) {
       toast.error("Please add items to cart before placing an order.")
-      router.push("/")
+      router.push("/products")
       return
     }
     if (!selectedAddressId) {
@@ -88,16 +98,12 @@ export default function CheckoutPage() {
       return
     }
     // Simulate order success
-    clearCart()
-    toast.success(`Payment method: ${payment.toUpperCase()}. You'll receive a confirmation shortly.`)
-    router.push("/")
+    codOrderMutation({
+      items: products,
+      amount: total,
+      clientOrderId,
+    })
   }
-
-  const totalPrice = productId ? Number(quantity) * data?.product?.price : getTotalPrice();
-  const subtotal = totalPrice
-  const shipping = subtotal > 999 ? 0 : 49
-  const total = subtotal + shipping
-
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-screen">

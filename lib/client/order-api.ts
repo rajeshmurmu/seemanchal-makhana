@@ -84,3 +84,33 @@ export const fetchAllOrders = async () => {
     throw new Error(JSON.stringify(error) || "Something went wrong");
   }
 };
+
+export const createCODOrder = async ({
+  amount,
+  items,
+  clientOrderId,
+  currency = "INR",
+  receipt,
+}: {
+  amount: number; // in paise
+  items: CartItem[];
+  clientOrderId: string;
+  currency?: string;
+  receipt?: string;
+}) => {
+  try {
+    const response = await apiClient.post("/api/orders/cod", {
+      amount,
+      items,
+      clientOrderId,
+      currency,
+      receipt,
+    });
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(JSON.stringify(error) || "Something went wrong");
+  }
+};
