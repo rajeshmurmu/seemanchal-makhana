@@ -23,8 +23,8 @@ import { useOrderMutation } from "@/hooks/use-order-mutation"
 export default function CheckoutPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { codOrderMutation } = useOrderMutation()
-  const { items, getTotalPrice } = useCart()
+  const { codOrderMutation, isCODOrderSuccess } = useOrderMutation()
+  const { items, getTotalPrice, clearCart } = useCart()
   const { addressData } = useAddressData()
   const [addresses, setAddresses] = useState<AddressType[]>([])
   const [products, setProducts] = useState<CartItem[]>([])
@@ -43,10 +43,11 @@ export default function CheckoutPage() {
   const quantity = searchParams.get('quantity')
   const productId = searchParams.get('productId')
 
-  // get params product
+  // get params product only when product slug is available
   const { data, isLoading } = useQuery({
     queryKey: ['product', product],
-    queryFn: () => getProductWithSlug({ slug: product as string })
+    queryFn: () => getProductWithSlug({ slug: product as string }),
+    enabled: !!product // only run query when product slug exists
   })
 
 
@@ -105,6 +106,12 @@ export default function CheckoutPage() {
       deliveryAddress: selectedAddressId
     })
   }
+
+  useEffect(() => {
+    if (products.length > 1 && isCODOrderSuccess) {
+      clearCart()
+    }
+  }, [clearCart, isCODOrderSuccess, products.length])
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-screen">
