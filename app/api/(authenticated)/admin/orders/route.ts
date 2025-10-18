@@ -5,7 +5,9 @@ export async function GET() {
   try {
     const orders = await Order.find({})
       .populate("items.productId")
-      .populate("user", "name email");
+      .populate("user", "name email")
+      .populate("deliveryAddress")
+      .sort({ createdAt: -1 });
 
     if (!orders) {
       return NextResponse.json(
