@@ -43,7 +43,7 @@ export default function MapAndLocationInfo() {
                             <div>
                                 <h4 className="font-medium text-logo-900">Email Us</h4>
                                 <p className="text-gray-700 text-sm">
-                                    info@munnamart.com
+                                    info@seemanchalmakhana.com
                                 </p>
                             </div>
                         </div>

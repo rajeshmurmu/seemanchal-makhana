@@ -36,7 +36,7 @@ export const uploadImageToCloudinary = async ({
 }: uploadImageParams) => {
   try {
     const uploadResult = await cloudinary.uploader.upload(filePath, {
-      folder: `munna-mart/products/${product_id}`, // organize images by product ID
+      folder: `seemanchal-makhana/products/${product_id}`, // organize images by product ID
       use_filename: true,
       unique_filename: false,
       resource_type: "image",
@@ -56,12 +56,14 @@ export const deleteAllImageWithFolder = async ({
   try {
     // 1. for deleting all images with the prefix (all images of a product) to empty the folder
     await cloudinary.api.delete_resources_by_prefix(
-      `munna-mart/products/${product_id}/`
+      `seemanchal-makhana/products/${product_id}/`
     );
 
     // 2. then delete the folder itself
     // for deleting the folder if needed (deletes all images in the folder)
-    await cloudinary.api.delete_folder(`munna-mart/products/${product_id}`);
+    await cloudinary.api.delete_folder(
+      `seemanchal-makhana/products/${product_id}`
+    );
   } catch (error) {
     console.log("delete_ImageFolder_From_Cloudinary:Error ", error);
   }
@@ -84,7 +86,7 @@ export const uploadImageBufferToCloudinary = async ({
         const uploadRes: UploadApiResponse = await new Promise(
           (resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
-              { folder: `munna-mart/products/${product_id}` },
+              { folder: `seemanchal-makhana/products/${product_id}` },
               (err, result) => {
                 if (err) reject(err);
                 else resolve(result as UploadApiResponse);
