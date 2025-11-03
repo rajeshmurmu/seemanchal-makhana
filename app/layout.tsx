@@ -15,7 +15,7 @@ const roboto = Roboto({
 
 
 export const metadata: Metadata = {
-    title: "Seemanchal Makhana - Authentic Traditional Foods",
+    title: "Munna Mart - Authentic Traditional Foods",
     description: "Discover the finest selection of traditional Indian foods, spices, and ingredients",
     generator: "Next.js",
 }

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { UserMenu } from "./user-menu"
 import { CartDrawer } from "../cart/cart-drawer"
 import { navigation } from "@/lib/data"
+import Image from "next/image"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -18,10 +19,10 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
+            <div className="w-8 h-8 bg-primary rounded-full overflow-hidden flex items-center justify-center">
+              <Image src="/munna-mart-logo.jpeg" alt="Logo" width={1000} height={1000} />
             </div>
-            <span className="font-bold text-xl text-primary">Semmanchal Makhana</span>
+            <span className="font-bold text-xl text-primary">Munna Mart</span>
           </Link>
 
           {/* Desktop Navigation */}
