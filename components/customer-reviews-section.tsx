@@ -26,7 +26,7 @@ export function CustomerReviewsSection() {
                 <div className="text-center space-y-4 mb-12">
                     <h2 className="text-3xl lg:text-4xl font-bold text-balance">What Our Customers Say</h2>
                     <p className="text-lg text-muted-foreground text-pretty max-w-2xl mx-auto">
-                        Read authentic reviews from our satisfied customers who trust Munna Mart for their traditional food needs.
+                        Read authentic reviews from our satisfied customers who trust ShuddhSwad for their traditional food needs.
                     </p>
                 </div>
 
@@ -51,7 +51,7 @@ export function CustomerReviewsSection() {
 
                 <div className="text-center mt-8">
                     <p className="text-muted-foreground">
-                        Join thousands of happy customers who trust Munna Mart for authentic traditional foods.
+                        Join thousands of happy customers who trust ShuddhSwad for authentic traditional foods.
                     </p>
                 </div>
             </div>

@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       receipt: clientOrderId || `rcpt_${crypto.randomUUID().slice(0, 28)}`,
       payment_capture: 1, // 1 = auto-capture, 0 = manual capture
       notes: {
-        integration: "Munna Mart",
+        integration: "seemanchal-makhana",
       },
     };
 

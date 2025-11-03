@@ -25,7 +25,7 @@ export default function DashboardSettings() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="site-name">Site Name</Label>
-                            <Input id="site-name" placeholder="Enter site name" readOnly defaultValue="Munna Mart" data-testid="input-site-name" />
+                            <Input id="site-name" placeholder="Enter site name" readOnly defaultValue="Seemanchal Makhana" data-testid="input-site-name" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="admin-email">Admin Email</Label>
