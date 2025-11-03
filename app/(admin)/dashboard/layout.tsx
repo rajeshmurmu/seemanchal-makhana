@@ -14,7 +14,7 @@ export default function Dashboardlayout({ children }: Readonly<{ children: React
                     <div className="flex items-center gap-2 w-full justify-between">
                         <div className='flex items-center gap-2'>
                             <SidebarTrigger data-testid="button-sidebar-toggle" />
-                            <h2 className="font-semibold text-lg">Seemanchal-Makhana Admin</h2>
+                            <h2 className="font-semibold text-lg">Munna Mart Admin</h2>
                         </div>
                         <div className='flex items-center justify-center h-full gap-2'>
                             <UserMenu />

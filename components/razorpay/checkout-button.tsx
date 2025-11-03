@@ -47,7 +47,8 @@ export default function CheckoutButton({ items, singleItem, amount, buttonText =
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: data.amount,
       currency: data.currency,
-      name: "Seemanchal Makhana",
+      name: "Munna Mart",
+      image: "https://munna-mart.vercel.app/munna-mart-logo.jpeg",
       description: "Order Payment Transaction",
       order_id: data.razorpayOrderId,
       handler: async function (response: any) {

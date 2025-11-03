@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 
 export function Footer() {
     return (
@@ -10,12 +11,12 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Company Info */}
                     <div className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-primary-foreground rounded-full flex items-center justify-center">
-                                <span className="text-primary font-bold text-sm">S</span>
+                        <Link href="/" className="flex items-center space-x-2">
+                            <div className="w-8 h-8 bg-primary rounded-full overflow-hidden flex items-center justify-center">
+                                <Image src="/munna-mart-logo.jpeg" alt="Logo" width={1000} height={1000} />
                             </div>
-                            <span className="font-bold text-xl">Seemanchal Makhana</span>
-                        </div>
+                            <span className="font-bold text-xl">Munna Mart</span>
+                        </Link>
                         <p className="text-primary-foreground/80 text-sm">
                             Your trusted source for authentic traditional Indian foods, spices, and ingredients. Quality guaranteed
                             since 1995.
@@ -112,7 +113,7 @@ export function Footer() {
                             </div>
                             <div className="flex items-center space-x-2 text-sm">
                                 <Mail className="h-4 w-4" />
-                                <span className="text-primary-foreground/80">info@seemanchalmakhana.com</span>
+                                <span className="text-primary-foreground/80">info@munnamart.com</span>
                             </div>
                             <div className="flex items-start space-x-2 text-sm">
                                 <MapPin className="h-4 w-4 mt-0.5" />
@@ -142,7 +143,7 @@ export function Footer() {
 
                 <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center">
                     <p className="text-primary-foreground/80 text-sm">
-                        &copy; {new Date().getFullYear()} Seemanchal Makhana. All rights reserved. | Made with ❤️ for traditional food lovers.
+                        &copy; {new Date().getFullYear()} Munna Mart. All rights reserved. | Made with ❤️ for traditional food lovers.
                     </p>
                 </div>
             </div>
