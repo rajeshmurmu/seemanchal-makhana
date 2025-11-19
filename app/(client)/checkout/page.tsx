@@ -19,8 +19,10 @@ import { useQuery } from "@tanstack/react-query"
 import { getProductWithSlug } from "@/lib/client/product-api"
 import LoadingState from "@/app/(admin)/components/loading-state"
 import { useOrderMutation } from "@/hooks/use-order-mutation"
+import { useAuth } from "@/lib/auth-context"
 
 export default function CheckoutPage() {
+  const { user } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { codOrderMutation, isCODOrderSuccess } = useOrderMutation()
@@ -113,12 +115,27 @@ export default function CheckoutPage() {
     }
   }, [clearCart, isCODOrderSuccess, products.length])
 
+  useEffect(() => {
+    if (!user?.email || !user?.id) {
+      router.push('/auth/login?callbackUrl=/checkout')
+      return
+    }
+  }, [router, user?.email, user?.id])
+
   if (isLoading) return (
     <div className="flex items-center justify-center h-screen">
       <LoadingState message="Please wait..." />
 
     </div>
   )
+
+  if (!products.length && !isLoading && items.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <h2 className="text-xl font-semibold">No items to checkout.</h2>
+      </div>
+    )
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -151,11 +168,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem id="pay-upi" value="upi" />
-                  <Label htmlFor="pay-upi">UPI (simulate)</Label>
+                  <Label htmlFor="pay-upi">UPI</Label>
                 </div>
                 <div className="flex items-center space-x-3">
                   <RadioGroupItem id="pay-card" value="card" />
-                  <Label htmlFor="pay-card">Credit/Debit Card (simulate)</Label>
+                  <Label htmlFor="pay-card">Credit/Debit Card</Label>
                 </div>
               </RadioGroup>
 

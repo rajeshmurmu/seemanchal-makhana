@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 redirect: false, // prevent full-page redirect
                 email,
                 password,
-                callbackUrl: "/"
+                // callbackUrl: "/"
             })
 
             if (result?.error) {
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email,
                 password,
                 redirect: false,
-                callbackUrl: "/"
+                // callbackUrl: "/"
             })
 
             // if login failed redirect to login
