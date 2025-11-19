@@ -16,11 +16,14 @@ import { useEffect, useState } from "react"
 import ProductDetailsSkeleton from "@/components/skeletons/product-details-skeleton"
 import { ReviewType } from "@/models/review.model"
 import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
+import { AuthModal } from "@/components/auth/auth-modal"
+import { useAuth } from "@/lib/auth-context"
 
 export default function ProductPage() {
     const params = useParams<{ slug: string }>()
     const { addToCart } = useCart()
     const router = useRouter()
+    const { user } = useAuth()
 
     const { data, isLoading, error, isError, refetch } = useQuery({
         queryKey: ['product', params.slug],
@@ -28,6 +31,7 @@ export default function ProductPage() {
     })
     const [product, setProduct] = useState<ResponseProductType | null>(null)
     const [averageRating, setAverageRating] = useState(0)
+    const [openAuthModal, setOpenAuthModal] = useState(false)
 
     useEffect(() => {
         if (data) {
@@ -50,6 +54,10 @@ export default function ProductPage() {
     }
 
     const handleBuyNow = () => {
+        if (!user?.email || !user?.id) {
+            setOpenAuthModal(true)
+            return
+        }
         if (!product?.inStock) return
         router.push(`/checkout?product=${params.slug}&quantity=1&productId=${product._id}`)
 
@@ -138,7 +146,11 @@ export default function ProductPage() {
                             {/* <CheckoutButton disabled={!product?.inStock} singleItem={{ product: product as ResponseProductType, quantity: 1 }} amount={Number(product?.price) * 100 as number}
                                 buttonText="Buy Now"
                             /> */}
-
+                            <AuthModal defaultMode="login" isOpen={openAuthModal} onClose={() => {
+                                setOpenAuthModal(false)
+                                if (!product?.inStock) return
+                                router.push(`/checkout?product=${params.slug}&quantity=1&productId=${product._id}`)
+                            }} />
                             <Button onClick={handleBuyNow} size="lg" className="flex-1 py-2 group" disabled={!product?.inStock}>Buy Now</Button>
                         </div>
 
