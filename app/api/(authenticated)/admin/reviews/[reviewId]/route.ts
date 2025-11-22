@@ -1,5 +1,5 @@
 import connectDB from "@/lib/server/mongodb";
-import { Review } from "@/models";
+import { Product, Review } from "@/models";
 import { NextResponse } from "next/server";
 
 export async function PUT(
@@ -58,6 +58,11 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    await Product.findOneAndUpdate(
+      { _id: deletedReview.product },
+      { $pull: { reviews: deletedReview._id } }
+    );
 
     return NextResponse.json(
       { success: true, deletedReview, message: "Review deleted successfully" },

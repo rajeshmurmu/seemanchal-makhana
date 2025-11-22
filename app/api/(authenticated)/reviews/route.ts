@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/server/auth";
 import connectDB from "@/lib/server/mongodb";
+import { Product } from "@/models";
 import Review from "@/models/review.model";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -34,6 +35,19 @@ export async function POST(req: NextRequest) {
     });
 
     const savedReview = await newReview.save();
+
+    if (!savedReview) {
+      return NextResponse.json(
+        { success: false, message: "Failed to save review" },
+        { status: 500 }
+      );
+    }
+
+    await Product.findOneAndUpdate(
+      { _id: productId },
+      { $push: { reviews: savedReview._id } }
+    );
+
     return NextResponse.json(
       { success: true, review: savedReview },
       { status: 200 }

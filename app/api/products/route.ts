@@ -33,6 +33,9 @@ export async function GET(req: NextRequest, {}) {
         path: "category",
         select: "name",
       })
+      .populate({
+        path: "reviews",
+      })
       .limit(limit)
       .skip(limit * (page - 1))
       .sort({ createdAt: -1 })

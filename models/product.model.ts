@@ -36,13 +36,14 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    reviewCount: {
-      type: Number,
-      default: 0,
+    reviews: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Review",
+        },
+      ],
+      default: [],
     },
     inStock: {
       type: Boolean,

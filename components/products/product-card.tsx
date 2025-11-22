@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Star, ShoppingCart } from "lucide-react"
+import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +11,7 @@ import Image from "next/image"
 import { ResponseProductType } from "@/types/types"
 import { StarRating } from "@/app/(admin)/dashboard/reviews/review-data-table"
 import { ReviewType } from "@/models/review.model"
+import { useState, useEffect } from "react"
 
 
 
@@ -21,6 +22,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const { addToCart } = useCart()
+    const [averageRating, setAverageRating] = useState(0)
 
     const discountPercentage = product.originalPrice
         ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -32,6 +34,15 @@ export function ProductCard({ product }: ProductCardProps) {
         addToCart(product)
         toast.success(`${product.name} has been added to your cart.`)
     }
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        // Calculate average rating
+        const avgRating = product?.reviews && product?.reviews?.reduce((acc, review) => acc + review.rating, 0) / (product?.reviews?.length || 1)
+
+        setAverageRating(avgRating || 0)
+    }, [product?.reviews]);
+
     return (
         <Card className="group w-[45%] lg:w-xs gap-2 md:gap-6 hover:shadow-lg transition-all p-0 md:pb-2 duration-300 overflow-hidden">
             <div className="relative overflow-hidden">
@@ -78,9 +89,9 @@ export function ProductCard({ product }: ProductCardProps) {
                                 />
                             ))} */}
 
-                            <StarRating rating={(product.reviews && product.reviews?.reduce((acc, review) => acc + review.rating, 0) / product.reviews?.length) || 0} />
+                            <StarRating rating={averageRating} />
                         </div>
-                        <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
+                        {/* <span className="text-sm text-muted-foreground">({product.reviewCount})</span> */}
                     </div>
 
                     <div className="flex items-center space-x-2">
