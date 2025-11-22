@@ -99,34 +99,38 @@ export default function OrderDetails<T extends Record<string, any>>({ order, set
 
                         <div>
                             <h4 className="font-semibold mb-2">Delivery Address</h4>
-                            <div className="text-sm text-muted-foreground">
-                                <div key={order.deliveryAddress._id} className="mb-2 p-2 border rounded">
-                                    <p>
-                                        <strong>Address Line 1: </strong>
-                                        {order.deliveryAddress.line1}
-                                    </p>
-                                    <p>
-                                        <strong>Address Line 2: </strong>
-                                        {order.deliveryAddress.line2}
-                                    </p>
-                                    <p>
-                                        <strong>City: </strong>
-                                        {order.deliveryAddress.city}
-                                    </p>
-                                    <p>
-                                        <strong>State: </strong>
-                                        {order.deliveryAddress.state}
-                                    </p>
-                                    <p>
-                                        <strong>Pincode: </strong>
-                                        {order.deliveryAddress.postalCode}
-                                    </p>
-                                    <p>
-                                        <strong>Country: </strong>
-                                        {order.deliveryAddress.country}
-                                    </p>
+                            {order.deliveryAddress ? (
+                                <div className="text-sm text-muted-foreground">
+                                    <div key={order.deliveryAddress._id} className="mb-2 p-2 border rounded">
+                                        <p>
+                                            <strong>Address Line 1: </strong>
+                                            {order.deliveryAddress.line1}
+                                        </p>
+                                        <p>
+                                            <strong>Address Line 2: </strong>
+                                            {order.deliveryAddress.line2}
+                                        </p>
+                                        <p>
+                                            <strong>City: </strong>
+                                            {order.deliveryAddress.city}
+                                        </p>
+                                        <p>
+                                            <strong>State: </strong>
+                                            {order.deliveryAddress.state}
+                                        </p>
+                                        <p>
+                                            <strong>Pincode: </strong>
+                                            {order.deliveryAddress.postalCode}
+                                        </p>
+                                        <p>
+                                            <strong>Country: </strong>
+                                            {order.deliveryAddress.country}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <p>No delivery address provided.</p>
+                            )}
                         </div>
 
                         <div>
