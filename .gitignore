@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI Generated Documentation
+API_REFERENCE.md
+COMPONENTS_GUIDE.md
+DOCUMENTATION.md
+SETUP_GUIDE.md
