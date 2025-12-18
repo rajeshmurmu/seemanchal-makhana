@@ -154,3 +154,27 @@ export const getAllCategories = async () => {
     throw new Error(JSON.stringify(error) || "Something went wrong");
   }
 };
+
+export const deleteImage = async ({
+  productId,
+  imageUrl,
+}: {
+  productId: string;
+  imageUrl: string;
+}) => {
+  try {
+    const res = await apiClient.delete(
+      `/api/admin/products/${productId}/images?imageUrl=${imageUrl}`
+    );
+
+    if (res.status !== 200) {
+      throw new Error("Failed to delete image");
+    }
+    return res.data;
+  } catch (error) {
+    if (error instanceof AxiosError && error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(JSON.stringify(error) || "Something went wrong");
+  }
+};

@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { Category, ProductFormData, ProductWithAdditionalFields, ResponseProductType } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
-import { getAllCategories } from "@/lib/client/product-api";
+import { deleteImage, getAllCategories } from "@/lib/client/product-api";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -85,6 +85,34 @@ export default function EditProductForm({
             }
         });
         onSubmit(formData as unknown as ProductFormData);
+    };
+
+    const handleRemoveImage = async (index: number) => {
+        try {
+
+            if (typeof uploadedProductImages[index] === "string") {
+                const data = await deleteImage({ productId: initialData?._id as string, imageUrl: uploadedProductImages[index] });
+
+                if (data.success) {
+                    const updatedImages = [...productImages];
+                    updatedImages.splice(index, 1);
+                    formData.setValue("images", updatedImages);
+                    uploadedProductImages.splice(index, 1);
+                }
+            } else {
+                const updatedImages = [...productImages];
+                updatedImages.splice(index, 1);
+                formData.setValue("images", updatedImages);
+                uploadedProductImages.splice(index, 1);
+            }
+
+
+
+
+
+        } catch (error) {
+            throw new Error(JSON.stringify(error) || "Something went wrong");
+        }
     };
 
     useEffect(() => {
@@ -283,10 +311,7 @@ export default function EditProductForm({
                                             <button
                                                 name="remove-image"
                                                 type="button"
-                                                onClick={() => {
-                                                    // remove the image
-                                                    formData.setValue("images", (formData.getValues("images") ?? []).filter((_, i) => i !== index) as File[]);
-                                                }}
+                                                onClick={() => handleRemoveImage(index)}
                                                 className="absolute -top-2 -right-2 bg-red-500 text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                                 data-testid={`button-remove-image-${index}`}
                                             >

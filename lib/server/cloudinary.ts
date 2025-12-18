@@ -48,6 +48,24 @@ export const uploadImageToCloudinary = async ({
   }
 };
 
+export const deleteImageFromCloudinary = async ({
+  productId,
+  imageUrl,
+}: {
+  productId: string;
+  imageUrl: string;
+}) => {
+  try {
+    const publicId = imageUrl.split("/").slice(-1)[0].split(".")[0];
+    await cloudinary.uploader.destroy(
+      `seemanchal-makhana/products/${productId}/${publicId}`,
+      { resource_type: "image" }
+    );
+  } catch (error) {
+    console.log("deleteImageFromCloudinary::Error ", error);
+  }
+};
+
 export const deleteAllImageWithFolder = async ({
   product_id,
 }: {
