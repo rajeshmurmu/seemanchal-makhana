@@ -1,5 +1,6 @@
 import React from 'react'
 import DashboardMetrics from './dashboard-metrics'
+import AnalyticsCharts from './analytics-charts'
 
 export default function page() {
     return (
@@ -9,7 +10,7 @@ export default function page() {
                 <p className="text-muted-foreground">Welcome to your e-commerce admin dashboard</p>
             </div>
             <DashboardMetrics />
-            {/* <AnalyticsCharts /> */}
+            <AnalyticsCharts />
         </div>
     )
 }

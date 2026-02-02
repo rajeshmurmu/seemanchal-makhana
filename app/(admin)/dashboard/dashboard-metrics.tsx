@@ -1,12 +1,17 @@
+"use client"
+
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package } from "lucide-react";
+import { fetchDashboardMetrics } from "@/lib/client/dashboard-api";
+import { useQuery } from "@tanstack/react-query";
+import { TrendingUp, TrendingDown, ShoppingCart, Users, Package, IndianRupee } from "lucide-react";
 
 interface MetricCardProps {
     title: string;
     value: string;
-    change: string;
-    trend: "up" | "down";
-    icon: React.ReactNode;
+    change?: string;
+    trend?: "up" | "down";
+    icon?: React.ReactNode;
 }
 
 function MetricCard({ title, value, change, trend, icon }: MetricCardProps) {
@@ -24,17 +29,20 @@ function MetricCard({ title, value, change, trend, icon }: MetricCardProps) {
                 <div className="text-2xl font-bold" data-testid={`text-metric-value-${title.toLowerCase().replace(/\s+/g, '-')}`}>
                     {value}
                 </div>
-                <div className="flex items-center text-xs">
-                    {trend === "up" ? (
-                        <TrendingUp className="mr-1 h-3 w-3 text-chart-1" />
-                    ) : (
-                        <TrendingDown className="mr-1 h-3 w-3 text-chart-5" />
-                    )}
-                    <span className={trend === "up" ? "text-chart-1" : "text-chart-5"}>
-                        {change}
-                    </span>
-                    <span className="ml-1 text-muted-foreground">from last month</span>
-                </div>
+
+                {trend && change && (
+                    <div className="flex items-center text-xs">
+                        {trend === "up" ? (
+                            <TrendingUp className="mr-1 h-3 w-3 text-chart-1" />
+                        ) : (
+                            <TrendingDown className="mr-1 h-3 w-3 text-chart-5" />
+                        )}
+                        <span className={trend === "up" ? "text-chart-1" : "text-chart-5"}>
+                            {change}
+                        </span>
+                        <span className="ml-1 text-muted-foreground">from last month</span>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
@@ -42,41 +50,88 @@ function MetricCard({ title, value, change, trend, icon }: MetricCardProps) {
 
 export default function DashboardMetrics() {
     //todo: remove mock functionality
-    const metrics = [
-        {
-            title: "Total Revenue",
-            value: "$54,231",
-            change: "+12.5%",
-            trend: "up" as const,
-            icon: <DollarSign className="h-4 w-4" />
-        },
-        {
-            title: "Orders",
-            value: "1,429",
-            change: "+8.2%",
-            trend: "up" as const,
-            icon: <ShoppingCart className="h-4 w-4" />
-        },
-        {
-            title: "Customers",
-            value: "892",
-            change: "+3.1%",
-            trend: "up" as const,
-            icon: <Users className="h-4 w-4" />
-        },
-        {
-            title: "Products",
-            value: "234",
-            change: "-2.4%",
-            trend: "down" as const,
-            icon: <Package className="h-4 w-4" />
+    // const metrics = [
+    //     {
+    //         title: "Total Revenue",
+    //         value: "$54,231",
+    //         change: "+12.5%",
+    //         trend: "up" as const,
+    //         icon: <IndianRupee className="h-4 w-4" />
+    //     },
+    //     {
+    //         title: "Orders",
+    //         value: "1,429",
+    //         change: "+8.2%",
+    //         trend: "up" as const,
+    //         icon: <ShoppingCart className="h-4 w-4" />
+    //     },
+    //     {
+    //         title: "Customers",
+    //         value: "892",
+    //         change: "+3.1%",
+    //         trend: "up" as const,
+    //         icon: <Users className="h-4 w-4" />
+    //     },
+    //     {
+    //         title: "Products",
+    //         value: "234",
+    //         change: "-2.4%",
+    //         trend: "down" as const,
+    //         icon: <Package className="h-4 w-4" />
+    //     }
+    // ];
+
+    const [metrics, setMetrics] = useState<MetricCardProps[]>([]);
+    const { data: metricsData, isLoading: metricsLoading, error: metricsError, isError: metricsIsError, refetch: metricsRefetch } = useQuery({
+        queryKey: ['admin-dashboard-metrics'],
+        queryFn: () => fetchDashboardMetrics(),
+
+    });
+
+    // UseEffect to handle metrics fetching results
+    useEffect(() => {
+        if (metricsData) {
+            const fetchedMetrics: MetricCardProps[] = [
+                {
+                    title: "Total Revenue",
+                    value: `₹${metricsData.metrics.revenue.value.toFixed(2)}`,
+                    icon: <IndianRupee className="h-4 w-4" />
+                },
+                {
+                    title: "Total Orders",
+                    value: metricsData.metrics.orders.value.toString(),
+                    icon: <ShoppingCart className="h-4 w-4" />
+                },
+                {
+                    title: "Customers",
+                    value: metricsData.metrics.users.customers.toString(),
+                    icon: <Users className="h-4 w-4" />
+                },
+                {
+                    title: "Products",
+                    value: metricsData.metrics.products.products.toString(),
+                    icon: <Package className="h-4 w-4" />
+                }
+            ];
+            setMetrics(fetchedMetrics);
         }
-    ];
+    }, [metricsData]);
+
+    useEffect(() => {
+        if (metricsError || metricsIsError) {
+            metricsRefetch();
+            setMetrics([]);
+        }
+    }, [metricsError, metricsIsError, metricsRefetch]);
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {metrics.map((metric) => (
-                <MetricCard key={metric.title} {...metric} />
+                metricsLoading ? (
+                    <Card key={metric.title} className="animate-pulse h-24" />
+                ) : (
+                    <MetricCard key={metric.title} {...metric} />
+                )
             ))}
         </div>
     );
