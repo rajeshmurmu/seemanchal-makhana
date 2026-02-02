@@ -33,23 +33,10 @@ export async function GET() {
     ]);
 
     const metrics = {
-      revenue: {
-        title: "Total Revenue",
-        value: (revenue[0]?.revenue || 0) / 100, // converting paise to rupees
-      },
-      orders: {
-        title: "Total Orders",
-        value: orders,
-      },
-
-      users: {
-        title: "Customers",
-        customers: usersCount,
-      },
-      products: {
-        title: "Products",
-        products: productsCount,
-      },
+      revenue: (revenue[0]?.revenue || 0) / 100, // converting paise to rupees
+      orders: orders,
+      users: usersCount,
+      products: productsCount,
     };
 
     return NextResponse.json(

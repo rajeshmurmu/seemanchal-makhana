@@ -1,23 +1,18 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchSalesTrend, fetchTopProducts } from "@/lib/client/dashboard-api";
-import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, Tooltip, Legend } from 'recharts';
 import LoadingState from "../components/loading-state";
+import { SalesData, TopProduct } from "@/hooks/use-dashboard-data";
 
-interface TopProduct {
-    name: string;
-    sales: number;
+interface AnalyticsChartsProps {
+    salesData: SalesData[];
+    topProducts: TopProduct[];
+    isLoading?: boolean;
+    isSalesDataLoading?: boolean;
+    isTopProductsLoading?: boolean;
 }
 
-interface SalesData {
-    month: string;
-    sales: number;
-    orders: number;
-}
-
-export default function AnalyticsCharts() {
+export default function AnalyticsCharts({ salesData, topProducts, isLoading }: AnalyticsChartsProps) {
     // mock data for sales data
     // const salesData = [
     //     { month: 'Jan', sales: 4000, orders: 120 },
@@ -37,53 +32,6 @@ export default function AnalyticsCharts() {
     //     { name: 'Power Bank', sales: 420 },
     // ];
 
-    const [topProductMetrics, setProductsMetrics] = useState<TopProduct[]>([]);
-    const [salesDataMetrics, setSalesDataMetrics] = useState<SalesData[]>([]);
-
-    const { data: salesTrendData, isLoading: salesTrendLoading, error: salesTrendError, isError: salesTrendIsError, refetch: salesTrendRefetch } = useQuery({
-        queryKey: ['sales-trend'],
-        queryFn: () => fetchSalesTrend()
-    })
-
-
-    const { data: topProductsData, isLoading: topProductsLoading, error: topProductsError, isError: topProductsIsError, refetch: topProductsRefetch } = useQuery({
-        queryKey: ['top-products'],
-        queryFn: () => fetchTopProducts()
-    })
-
-    // UseEffects to handle sales trend fetching results
-    useEffect(() => {
-        if (salesTrendData) {
-            setSalesDataMetrics(salesTrendData.salesData || [])
-        }
-    }, [salesTrendData])
-
-    useEffect(() => {
-        if (salesTrendError || salesTrendIsError) {
-            salesTrendRefetch()
-            setSalesDataMetrics([])
-        }
-    }, [salesTrendError, salesTrendIsError, salesTrendRefetch])
-
-
-
-    // UseEffects to handle top products fetching results
-    useEffect(() => {
-        if (topProductsData) {
-            setProductsMetrics(topProductsData.topProducts || [])
-        }
-    }, [topProductsData])
-
-    useEffect(() => {
-        if (topProductsError || topProductsIsError) {
-            topProductsRefetch()
-            setProductsMetrics([])
-
-        }
-    }, [topProductsError, topProductsIsError, topProductsRefetch])
-
-
-
 
     return (
         <div className="flex flex-col gap-4">
@@ -93,19 +41,18 @@ export default function AnalyticsCharts() {
                 </CardHeader>
                 <CardContent>
                     {
-                        salesTrendLoading ? (
+                        isLoading ? (
                             <div className="h-[300px] flex justify-center items-center">
                                 <LoadingState message="Loading sales trend data" />
                             </div>
-                        ) : salesDataMetrics.length === 0 ? (
+                        ) : salesData.length === 0 ? (
                             <div className="h-[300px] flex justify-center items-center">
                                 <p>No data available</p>
                             </div>
                         ) : (
-
                             <div className="h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={salesDataMetrics}>
+                                    <LineChart data={salesData}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="green" />
                                         <XAxis
                                             dataKey="month"
@@ -136,18 +83,18 @@ export default function AnalyticsCharts() {
                 </CardHeader>
                 <CardContent>
                     {
-                        topProductsLoading ? (
+                        isLoading ? (
                             <div className="h-[500px] flex justify-center items-center">
                                 <LoadingState message="Loading top selling products" />
                             </div>
-                        ) : topProductMetrics.length === 0 ? (
+                        ) : topProducts.length === 0 ? (
                             <div className="h-[500px] flex justify-center items-center">
                                 <p>No data available</p>
                             </div>
                         ) : (
                             <div className="h-[500px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={topProductMetrics} layout="horizontal">
+                                    <BarChart data={topProducts} layout="horizontal">
                                         <CartesianGrid
                                             strokeDasharray="3 3"
                                             stroke="green"
