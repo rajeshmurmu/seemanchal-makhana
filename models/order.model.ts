@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import { UserType } from "./user.model";
+import { AddressType } from "./address.model";
+import { ProductType } from "./product.model";
 
 export const OrderItemSchema = new mongoose.Schema({
   productId: {
@@ -66,8 +69,12 @@ const OrderSchema = new mongoose.Schema(
 const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
 export default Order;
 
+export type OrderItemType = mongoose.InferSchemaType<typeof OrderItemSchema>;
 export type OrderType = mongoose.InferSchemaType<typeof OrderSchema> & {
   _id: string;
   createdAt: string;
   updatedAt: string;
+  user: UserType;
+  deliveryAddress: AddressType;
+  items: (OrderItemType & { productId: ProductType })[];
 };

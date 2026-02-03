@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { OrderType } from "./order.model";
+import { AddressType } from "./address.model";
 
 const userSchema = new mongoose.Schema(
   {
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
@@ -41,4 +42,5 @@ export type UserType = mongoose.InferSchemaType<typeof userSchema> & {
   createdAt: string;
   updatedAt: string;
   orders: OrderType[];
+  address: AddressType[];
 };
